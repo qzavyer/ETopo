@@ -24,6 +24,8 @@ namespace ETopo
         public double right = 0.0;
         public double buttom = 0.0;
         public double top = 0.0;
+        public double? _splineX = null;
+        public double? _splineY = null;
 
         public List<Spline> _spline;
         public List<Piquet> PqList;
@@ -228,7 +230,10 @@ namespace ETopo
 
         private void DrawSpline()
         {
-            
+            foreach (var spline in _spline)
+            {
+                //spline.
+            }
         }
 
         private void FillCave()
@@ -339,7 +344,12 @@ namespace ETopo
 
         private void anT_MouseClick(object sender, MouseEventArgs e)
         {
-            _spline.Add(new Spline { Bias = 0, Cont = 0, Ra = 0, Rb = 0, Tens = 0, X = e.X, Y = e.Y });
+            if (_splineX != null && _splineY != null)
+            {
+                _spline.Add(new Spline { Bias = 0, Cont = 0, Ra = 0, Rb = 0, Tens = 0, X = e.X, Y = e.Y });
+            }
+            _splineX = e.X;
+            _splineY = e.Y;
         }
 
         private void anT_MouseDown(object sender, MouseEventArgs e)
