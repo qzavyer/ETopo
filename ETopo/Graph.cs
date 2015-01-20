@@ -26,6 +26,8 @@ namespace ETopo
         public double top = 0.0;
         public double? _splineX = null;
         public double? _splineY = null;
+        public double devX;
+        public double devY;
 
         public List<Spline> _spline;
         public List<Piquet> PqList;
@@ -42,7 +44,12 @@ namespace ETopo
             Gl.glViewport(0, 0, anT.Width, anT.Height);
             Gl.glMatrixMode(Gl.GL_PROJECTION);
             Gl.glLoadIdentity();
-            Glu.gluOrtho2D(left, right, buttom, top);
+            var ScreenW = 500.0*anT.Width/anT.Height;
+            var ScreenH = 500.0;
+            devX = (float)ScreenW / anT.Width;
+            devY = (float)ScreenH / anT.Height;
+            Glu.gluOrtho2D(0.0, ScreenW, 0.0, ScreenH);
+            //Glu.gluOrtho2D(left, right, buttom, top);
             //  Glu.gluPerspective(0, (float)anT.Width / anT.Height, 0, 0);
             Gl.glMatrixMode(Gl.GL_MODELVIEW);
             Gl.glLoadIdentity();
@@ -209,8 +216,10 @@ namespace ETopo
         
         private void anT_Click(object sender, EventArgs e)
         {
-           
-            DrawMap();
+            foreach (var piquet in PqList)
+            {
+                //if(piquet.X==e)
+            }
         }
 
         private void tVis_Tick(object sender, EventArgs e)
@@ -344,6 +353,16 @@ namespace ETopo
 
         private void anT_MouseClick(object sender, MouseEventArgs e)
         {
+            var x = e.X;
+            var y = e.Y;
+
+            // приводим к нужному нам формату, в соотвествии с настройками проекции 
+            var lineX = (e.X*devX - _moveX)/_scale;
+            var lineY = ((anT.Height - e.Y)*devY - _moveY)/_scale;
+            foreach (var piquet in PqList.Where(piquet => Math.Abs(piquet.X - lineX) < 0.5 && Math.Abs(piquet.Y - lineY) < 0.5))
+            {
+                lbPiq.Items.Add(piquet.Name);
+            }
             if (_splineX != null && _splineY != null)
             {
                 _spline.Add(new Spline { Bias = 0, Cont = 0, Ra = 0, Rb = 0, Tens = 0, X = e.X, Y = e.Y });
@@ -403,6 +422,11 @@ namespace ETopo
             }
             if (e.Delta == 0) return;
             _scale-=0.1;
+        }
+
+        private void btBuild_Click_1(object sender, EventArgs e)
+        {
+
         }
 
     }
