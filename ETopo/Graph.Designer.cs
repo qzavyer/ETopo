@@ -31,13 +31,19 @@
             this.components = new System.ComponentModel.Container();
             this.tVis = new System.Windows.Forms.Timer(this.components);
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btListFilt = new System.Windows.Forms.Button();
+            this.btClrLst = new System.Windows.Forms.Button();
+            this.btRemList = new System.Windows.Forms.Button();
+            this.btAddPiqList = new System.Windows.Forms.Button();
+            this.tbAddPqName = new System.Windows.Forms.TextBox();
+            this.cbTrapez = new System.Windows.Forms.CheckBox();
+            this.lbPiq = new System.Windows.Forms.ListBox();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.btZoomIn = new System.Windows.Forms.Button();
             this.btBuild = new System.Windows.Forms.Button();
             this.anT = new Tao.Platform.Windows.SimpleOpenGlControl();
-            this.lbPiq = new System.Windows.Forms.ListBox();
+            this.cbSpline = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -49,34 +55,99 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.cbSpline);
+            this.panel1.Controls.Add(this.btListFilt);
+            this.panel1.Controls.Add(this.btClrLst);
+            this.panel1.Controls.Add(this.btRemList);
+            this.panel1.Controls.Add(this.btAddPiqList);
+            this.panel1.Controls.Add(this.tbAddPqName);
+            this.panel1.Controls.Add(this.cbTrapez);
             this.panel1.Controls.Add(this.lbPiq);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel1.Location = new System.Drawing.Point(941, 0);
+            this.panel1.Location = new System.Drawing.Point(925, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(200, 518);
+            this.panel1.Size = new System.Drawing.Size(200, 629);
             this.panel1.TabIndex = 8;
+            // 
+            // btListFilt
+            // 
+            this.btListFilt.Location = new System.Drawing.Point(6, 236);
+            this.btListFilt.Name = "btListFilt";
+            this.btListFilt.Size = new System.Drawing.Size(105, 25);
+            this.btListFilt.TabIndex = 6;
+            this.btListFilt.Text = "Фильтровать";
+            this.btListFilt.UseVisualStyleBackColor = true;
+            this.btListFilt.Click += new System.EventHandler(this.btListFilt_Click);
+            // 
+            // btClrLst
+            // 
+            this.btClrLst.Location = new System.Drawing.Point(154, 207);
+            this.btClrLst.Name = "btClrLst";
+            this.btClrLst.Size = new System.Drawing.Size(34, 23);
+            this.btClrLst.TabIndex = 5;
+            this.btClrLst.Text = "X";
+            this.btClrLst.UseVisualStyleBackColor = true;
+            this.btClrLst.Click += new System.EventHandler(this.btClrLst_Click);
+            // 
+            // btRemList
+            // 
+            this.btRemList.Location = new System.Drawing.Point(111, 207);
+            this.btRemList.Name = "btRemList";
+            this.btRemList.Size = new System.Drawing.Size(34, 23);
+            this.btRemList.TabIndex = 4;
+            this.btRemList.Text = "-";
+            this.btRemList.UseVisualStyleBackColor = true;
+            this.btRemList.Click += new System.EventHandler(this.btRemList_Click);
+            // 
+            // btAddPiqList
+            // 
+            this.btAddPiqList.Location = new System.Drawing.Point(71, 207);
+            this.btAddPiqList.Name = "btAddPiqList";
+            this.btAddPiqList.Size = new System.Drawing.Size(34, 23);
+            this.btAddPiqList.TabIndex = 3;
+            this.btAddPiqList.Text = "+";
+            this.btAddPiqList.UseVisualStyleBackColor = true;
+            this.btAddPiqList.Click += new System.EventHandler(this.btAddPiqList_Click);
+            // 
+            // tbAddPqName
+            // 
+            this.tbAddPqName.Location = new System.Drawing.Point(6, 207);
+            this.tbAddPqName.Name = "tbAddPqName";
+            this.tbAddPqName.Size = new System.Drawing.Size(59, 22);
+            this.tbAddPqName.TabIndex = 2;
+            // 
+            // cbTrapez
+            // 
+            this.cbTrapez.AutoSize = true;
+            this.cbTrapez.Checked = true;
+            this.cbTrapez.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbTrapez.Location = new System.Drawing.Point(6, 346);
+            this.cbTrapez.Name = "cbTrapez";
+            this.cbTrapez.Size = new System.Drawing.Size(159, 21);
+            this.cbTrapez.TabIndex = 1;
+            this.cbTrapez.Text = "Показать трапеции";
+            this.cbTrapez.UseVisualStyleBackColor = true;
+            this.cbTrapez.CheckedChanged += new System.EventHandler(this.cbTrapez_CheckedChanged);
+            // 
+            // lbPiq
+            // 
+            this.lbPiq.FormattingEnabled = true;
+            this.lbPiq.ItemHeight = 16;
+            this.lbPiq.Location = new System.Drawing.Point(6, 37);
+            this.lbPiq.Name = "lbPiq";
+            this.lbPiq.Size = new System.Drawing.Size(182, 164);
+            this.lbPiq.TabIndex = 0;
             // 
             // panel2
             // 
-            this.panel2.Controls.Add(this.button2);
             this.panel2.Controls.Add(this.button1);
             this.panel2.Controls.Add(this.btZoomIn);
             this.panel2.Controls.Add(this.btBuild);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(941, 37);
+            this.panel2.Size = new System.Drawing.Size(925, 37);
             this.panel2.TabIndex = 9;
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(185, 3);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 11;
-            this.button2.Text = "button2";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // button1
             // 
@@ -121,10 +192,9 @@
             this.anT.Dock = System.Windows.Forms.DockStyle.Fill;
             this.anT.Location = new System.Drawing.Point(0, 37);
             this.anT.Name = "anT";
-            this.anT.Size = new System.Drawing.Size(941, 481);
+            this.anT.Size = new System.Drawing.Size(925, 592);
             this.anT.StencilBits = ((byte)(0));
             this.anT.TabIndex = 10;
-            this.anT.Load += new System.EventHandler(this.anT_Load);
             this.anT.Click += new System.EventHandler(this.anT_Click);
             this.anT.MouseClick += new System.Windows.Forms.MouseEventHandler(this.anT_MouseClick);
             this.anT.MouseDown += new System.Windows.Forms.MouseEventHandler(this.anT_MouseDown);
@@ -132,20 +202,24 @@
             this.anT.MouseUp += new System.Windows.Forms.MouseEventHandler(this.anT_MouseUp);
             this.anT.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.anT_MouseWheel);
             // 
-            // lbPiq
+            // cbSpline
             // 
-            this.lbPiq.FormattingEnabled = true;
-            this.lbPiq.ItemHeight = 16;
-            this.lbPiq.Location = new System.Drawing.Point(6, 12);
-            this.lbPiq.Name = "lbPiq";
-            this.lbPiq.Size = new System.Drawing.Size(182, 164);
-            this.lbPiq.TabIndex = 0;
+            this.cbSpline.AutoSize = true;
+            this.cbSpline.Checked = true;
+            this.cbSpline.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbSpline.Location = new System.Drawing.Point(6, 373);
+            this.cbSpline.Name = "cbSpline";
+            this.cbSpline.Size = new System.Drawing.Size(121, 21);
+            this.cbSpline.TabIndex = 7;
+            this.cbSpline.Text = "Ввод сплайна";
+            this.cbSpline.UseVisualStyleBackColor = true;
+            this.cbSpline.CheckedChanged += new System.EventHandler(this.cbSpline_CheckedChanged);
             // 
             // Graph
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1141, 518);
+            this.ClientSize = new System.Drawing.Size(1125, 629);
             this.Controls.Add(this.anT);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
@@ -153,7 +227,9 @@
             this.Name = "Graph";
             this.Text = "Graph";
             this.Load += new System.EventHandler(this.Graph_Load);
+            this.Resize += new System.EventHandler(this.Graph_Resize);
             this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -164,11 +240,17 @@
         private System.Windows.Forms.Timer tVis;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button btZoomIn;
         private System.Windows.Forms.Button btBuild;
         public Tao.Platform.Windows.SimpleOpenGlControl anT;
         private System.Windows.Forms.ListBox lbPiq;
+        private System.Windows.Forms.CheckBox cbTrapez;
+        private System.Windows.Forms.Button btClrLst;
+        private System.Windows.Forms.Button btRemList;
+        private System.Windows.Forms.Button btAddPiqList;
+        private System.Windows.Forms.TextBox tbAddPqName;
+        private System.Windows.Forms.Button btListFilt;
+        private System.Windows.Forms.CheckBox cbSpline;
     }
 }

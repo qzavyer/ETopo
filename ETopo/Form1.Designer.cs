@@ -79,63 +79,73 @@
             // 
             // ClFrom
             // 
+            this.ClFrom.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.ClFrom.FillWeight = 40F;
             this.ClFrom.HeaderText = "От";
             this.ClFrom.Name = "ClFrom";
-            this.ClFrom.Width = 40;
             // 
             // ClTo
             // 
+            this.ClTo.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.ClTo.FillWeight = 40F;
             this.ClTo.HeaderText = "До";
             this.ClTo.Name = "ClTo";
-            this.ClTo.Width = 40;
             // 
             // ClLen
             // 
+            this.ClLen.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.ClLen.FillWeight = 50F;
             this.ClLen.HeaderText = "Длина";
             this.ClLen.Name = "ClLen";
-            this.ClLen.Width = 50;
             // 
             // ClAz
             // 
+            this.ClAz.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.ClAz.FillWeight = 50F;
             this.ClAz.HeaderText = "Азимут";
             this.ClAz.Name = "ClAz";
-            this.ClAz.Width = 50;
             // 
             // ClClino
             // 
+            this.ClClino.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.ClClino.FillWeight = 50F;
             this.ClClino.HeaderText = "Угол";
             this.ClClino.Name = "ClClino";
-            this.ClClino.Width = 50;
             // 
             // ClLeft
             // 
+            this.ClLeft.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.ClLeft.FillWeight = 50F;
             this.ClLeft.HeaderText = "Влево";
             this.ClLeft.Name = "ClLeft";
-            this.ClLeft.Width = 50;
             // 
             // ClRight
             // 
+            this.ClRight.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.ClRight.FillWeight = 50F;
             this.ClRight.HeaderText = "Вправо";
             this.ClRight.Name = "ClRight";
-            this.ClRight.Width = 50;
             // 
             // ClUp
             // 
+            this.ClUp.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.ClUp.FillWeight = 50F;
             this.ClUp.HeaderText = "Вверх";
             this.ClUp.Name = "ClUp";
-            this.ClUp.Width = 50;
             // 
             // ClDown
             // 
+            this.ClDown.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.ClDown.FillWeight = 50F;
             this.ClDown.HeaderText = "Вниз";
             this.ClDown.Name = "ClDown";
-            this.ClDown.Width = 50;
             // 
             // ClNote
             // 
+            this.ClNote.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.ClNote.FillWeight = 135F;
             this.ClNote.HeaderText = "Примечание";
             this.ClNote.Name = "ClNote";
-            this.ClNote.Width = 135;
             // 
             // menuStrip1
             // 
@@ -203,7 +213,7 @@
             // dToolStripMenuItem
             // 
             this.dToolStripMenuItem.Name = "dToolStripMenuItem";
-            this.dToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.dToolStripMenuItem.Size = new System.Drawing.Size(94, 22);
             this.dToolStripMenuItem.Text = "2D";
             this.dToolStripMenuItem.Click += new System.EventHandler(this.dToolStripMenuItem_Click);
             // 
@@ -255,16 +265,6 @@
         #endregion
 
         private System.Windows.Forms.DataGridView dgTopo;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ClFrom;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ClTo;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ClLen;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ClAz;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ClClino;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ClLeft;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ClRight;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ClUp;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ClDown;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ClNote;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem файлToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem новыйToolStripMenuItem;
@@ -278,6 +278,16 @@
         private System.Windows.Forms.SaveFileDialog sdSave;
         private System.Windows.Forms.ToolStripMenuItem съёмкаToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem mData;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ClFrom;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ClTo;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ClLen;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ClAz;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ClClino;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ClLeft;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ClRight;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ClUp;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ClDown;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ClNote;
     }
 }
 

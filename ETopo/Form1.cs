@@ -6,7 +6,6 @@ using System.Windows.Forms;
 using System.Xml;
 using Ionic.Zip;
 using Tao.FreeGlut;
-using Tao.OpenGl;
 
 namespace ETopo
 {
@@ -38,7 +37,6 @@ namespace ETopo
                     var ent = zip["cave.xml"];
                     ent.Extract(fl);
                     fl.Position = 0;
-                    var rs = new XmlReaderSettings ();
                     using (var reader = XmlReader.Create(fl))
                     {
 
@@ -248,15 +246,18 @@ namespace ETopo
         {
             Glut.glutInit();
             Glut.glutInitDisplayMode(Glut.GLUT_RGB | Glut.GLUT_DOUBLE | Glut.GLUT_DEPTH);
+            dgTopo.BackgroundImage = Properties.Resources.cell;
+            
         }
 
         private void dToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var fr = new Graph {PqList = _piquetLst, TrcList = _traceList};
-            fr.top = _piquetLst.Max(p => p.Y);
-            fr.buttom = _piquetLst.Min(p => p.Y);
-            fr.left = _piquetLst.Min(p=>p.X);
-            fr.right = _piquetLst.Max(p=>p.X);
+            var d = Math.Max(_traceList.Max(t => t.Left), _traceList.Max(t => t.Right));
+            fr.top = _piquetLst.Max(p => p.Y)+d;
+            fr.Buttom = _piquetLst.Min(p => p.Y)-d;
+            fr.left = _piquetLst.Min(p=>p.X)-d;
+            fr.right = _piquetLst.Max(p=>p.X)+d;
 
             fr.ShowDialog();
         }

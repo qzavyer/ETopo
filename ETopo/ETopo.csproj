@@ -89,6 +89,7 @@
       <DependentUpon>TopoData.cs</DependentUpon>
     </Compile>
     <Compile Include="TopoLib.cs" />
+    <Compile Include="Point.cs" />
     <Compile Include="Trace.cs" />
     <Compile Include="Vector.cs" />
     <EmbeddedResource Include="Form1.resx">
@@ -105,6 +106,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="TopoData.resx">
       <DependentUpon>TopoData.cs</DependentUpon>
@@ -118,6 +120,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cell.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
