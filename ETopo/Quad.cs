@@ -2,9 +2,9 @@
 {
     class Quad
     {
-        public DPoint TopLeft { get; set; }
-        public DPoint TopRight { get; set; }
-        public DPoint BottomRight { get; set; }
-        public DPoint BottomLeft { get; set; }
+        public Point TopLeft { get; set; }
+        public Point TopRight { get; set; }
+        public Point BottomRight { get; set; }
+        public Point BottomLeft { get; set; }
     }
 }

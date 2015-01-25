@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Tao.FreeGlut;
 using Tao.OpenGl;
@@ -28,7 +25,7 @@ namespace ETopo
         private double _devY;
         private bool _listOnly;
 
-        private List<Spline> _spline;
+        private List<SplinePoint> _spline;
         public List<Piquet> PqList;
         private List<Piquet> _currPqList;
         public List<Trace> TrcList; 
@@ -56,16 +53,22 @@ namespace ETopo
             Gl.glLoadIdentity();
             Gl.glEnable(Gl.GL_DEPTH_TEST);
 
-            _spline = new List<Spline>();
+            _spline = new List<SplinePoint>();
             _currPqList = new List<Piquet>();
         }
 
-        private static float Y(Spline spline0, Spline spline1, double t)
+        private static Point GetSplinePoint(SplinePoint spline0, SplinePoint spline1, double t)
         {
-            return
-                (float)
-                    (spline0.Y*(2*t*t*t - 3*t*t + 1) + spline0.Rb*(t*t*t - 2*t*t + t) + spline1.Y*(-2*t*t*t + 3*t*t) +
-                     spline1.Ra*(t*t*t - t*t));
+            return new Point
+            {
+                X = (float)
+                    (spline0.Point.X*(2*t*t*t - 3*t*t + 1) + spline0.Rb.X*(t*t*t - 2*t*t + t) +
+                     spline1.Point.X*(-2*t*t*t + 3*t*t) + spline1.Ra.X*(t*t*t - t*t)),
+                Y =
+                    (float)
+                        (spline0.Point.Y*(2*t*t*t - 3*t*t + 1) + spline0.Rb.Y*(t*t*t - 2*t*t + t) +
+                         spline1.Point.Y*(-2*t*t*t + 3*t*t) + spline1.Ra.Y*(t*t*t - t*t))
+            };
         }
 
         private static float Y(Spline spline0, Spline spline1, double t, double alpha)
@@ -224,6 +227,34 @@ namespace ETopo
                 Gl.glColor3f(0.0f, 0.0f, 0.0f);
                 PrintText2D((float)(piquet.X*_scale+_moveX), (float)(piquet.Y*_scale+_moveY), piquet.Name);
             }
+
+            Gl.glColor3f(0.0f, 0.0f, 0.0f);
+            Gl.glBegin(Gl.GL_LINES);
+            for (var i = 0; i < _spline.Count - 1; i++)
+            {
+                double t = 0;
+                while (t < 1)
+                {
+                    var point = GetSplinePoint(_spline[i], _spline[i + 1], t);
+                    Gl.glVertex2d(point.X*_scale + _moveX, point.Y*_scale + _moveY);
+                    t += 0.1;
+                }
+            }
+            Gl.glEnd();
+            
+            Gl.glPointSize(5);
+            Gl.glBegin(Gl.GL_POINTS);
+            foreach (var point in _spline)
+            {
+                Gl.glColor3f(0.5f, 0.5f, 0.5f);
+                Gl.glVertex2d((float) (point.Point.X*_scale + _moveX), (float) (point.Point.Y*_scale + _moveY));
+                Gl.glColor3f(0.0f, 0.0f, 1.0f);
+                Gl.glVertex2d((float) (point.Ra.X*_scale + _moveX), (float) (point.Ra.Y*_scale + _moveY));
+                Gl.glVertex2d((float) (point.Rb.X*_scale + _moveX), (float) (point.Rb.Y*_scale + _moveY));
+            }
+            Gl.glEnd();
+
+            
             Gl.glFlush();
             anT.Invalidate();
         }
@@ -291,11 +322,12 @@ namespace ETopo
             }
             else
             {
-                
+                var s = new SplinePoint((float) lineX, (float) lineY, _spline);
+                _spline.Add(s);
             }
             if (_splineX != null && _splineY != null)
             {
-                _spline.Add(new Spline { Bias = 0, Cont = 0, Ra = 0, Rb = 0, Tens = 0, X = e.X, Y = e.Y });
+               // _spline.Add(new Spline { Bias = 0, Cont = 0, Ra = 0, Rb = 0, Tens = 0, X = e.X, Y = e.Y });
             }
             _splineX = e.X;
             _splineY = e.Y;
