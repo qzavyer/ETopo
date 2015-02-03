@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             this.tVis = new System.Windows.Forms.Timer(this.components);
             this.panel1 = new System.Windows.Forms.Panel();
+            this.cbSpline = new System.Windows.Forms.CheckBox();
             this.btListFilt = new System.Windows.Forms.Button();
             this.btClrLst = new System.Windows.Forms.Button();
             this.btRemList = new System.Windows.Forms.Button();
@@ -43,7 +44,8 @@
             this.btZoomIn = new System.Windows.Forms.Button();
             this.btBuild = new System.Windows.Forms.Button();
             this.anT = new Tao.Platform.Windows.SimpleOpenGlControl();
-            this.cbSpline = new System.Windows.Forms.CheckBox();
+            this.rbAddSpline = new System.Windows.Forms.RadioButton();
+            this.rbEditSpline = new System.Windows.Forms.RadioButton();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -55,6 +57,8 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.rbEditSpline);
+            this.panel1.Controls.Add(this.rbAddSpline);
             this.panel1.Controls.Add(this.cbSpline);
             this.panel1.Controls.Add(this.btListFilt);
             this.panel1.Controls.Add(this.btClrLst);
@@ -68,6 +72,17 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(200, 629);
             this.panel1.TabIndex = 8;
+            // 
+            // cbSpline
+            // 
+            this.cbSpline.AutoSize = true;
+            this.cbSpline.Location = new System.Drawing.Point(6, 373);
+            this.cbSpline.Name = "cbSpline";
+            this.cbSpline.Size = new System.Drawing.Size(79, 21);
+            this.cbSpline.TabIndex = 7;
+            this.cbSpline.Text = "Сплайн";
+            this.cbSpline.UseVisualStyleBackColor = true;
+            this.cbSpline.CheckedChanged += new System.EventHandler(this.cbSpline_CheckedChanged);
             // 
             // btListFilt
             // 
@@ -195,25 +210,36 @@
             this.anT.Size = new System.Drawing.Size(925, 592);
             this.anT.StencilBits = ((byte)(0));
             this.anT.TabIndex = 10;
-            this.anT.Click += new System.EventHandler(this.anT_Click);
+            this.anT.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.anT_KeyPress);
             this.anT.MouseClick += new System.Windows.Forms.MouseEventHandler(this.anT_MouseClick);
             this.anT.MouseDown += new System.Windows.Forms.MouseEventHandler(this.anT_MouseDown);
             this.anT.MouseMove += new System.Windows.Forms.MouseEventHandler(this.anT_MouseMove);
             this.anT.MouseUp += new System.Windows.Forms.MouseEventHandler(this.anT_MouseUp);
             this.anT.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.anT_MouseWheel);
             // 
-            // cbSpline
+            // rbAddSpline
             // 
-            this.cbSpline.AutoSize = true;
-            this.cbSpline.Checked = true;
-            this.cbSpline.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbSpline.Location = new System.Drawing.Point(6, 373);
-            this.cbSpline.Name = "cbSpline";
-            this.cbSpline.Size = new System.Drawing.Size(121, 21);
-            this.cbSpline.TabIndex = 7;
-            this.cbSpline.Text = "Ввод сплайна";
-            this.cbSpline.UseVisualStyleBackColor = true;
-            this.cbSpline.CheckedChanged += new System.EventHandler(this.cbSpline_CheckedChanged);
+            this.rbAddSpline.AutoSize = true;
+            this.rbAddSpline.Enabled = false;
+            this.rbAddSpline.Location = new System.Drawing.Point(22, 400);
+            this.rbAddSpline.Name = "rbAddSpline";
+            this.rbAddSpline.Size = new System.Drawing.Size(110, 21);
+            this.rbAddSpline.TabIndex = 8;
+            this.rbAddSpline.TabStop = true;
+            this.rbAddSpline.Text = "radioButton1";
+            this.rbAddSpline.UseVisualStyleBackColor = true;
+            // 
+            // rbEditSpline
+            // 
+            this.rbEditSpline.AutoSize = true;
+            this.rbEditSpline.Enabled = false;
+            this.rbEditSpline.Location = new System.Drawing.Point(22, 427);
+            this.rbEditSpline.Name = "rbEditSpline";
+            this.rbEditSpline.Size = new System.Drawing.Size(110, 21);
+            this.rbEditSpline.TabIndex = 9;
+            this.rbEditSpline.TabStop = true;
+            this.rbEditSpline.Text = "radioButton2";
+            this.rbEditSpline.UseVisualStyleBackColor = true;
             // 
             // Graph
             // 
@@ -252,5 +278,7 @@
         private System.Windows.Forms.TextBox tbAddPqName;
         private System.Windows.Forms.Button btListFilt;
         private System.Windows.Forms.CheckBox cbSpline;
+        private System.Windows.Forms.RadioButton rbEditSpline;
+        private System.Windows.Forms.RadioButton rbAddSpline;
     }
 }

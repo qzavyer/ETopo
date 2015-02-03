@@ -24,8 +24,10 @@ namespace ETopo
         private double _devX;
         private double _devY;
         private bool _listOnly;
+        private EditPoint _editPoint;
 
-        private List<SplinePoint> _spline;
+        private List<Spline> _spline;
+        private List<SplinePoint> _curSpline;
         public List<Piquet> PqList;
         private List<Piquet> _currPqList;
         public List<Trace> TrcList; 
@@ -53,8 +55,10 @@ namespace ETopo
             Gl.glLoadIdentity();
             Gl.glEnable(Gl.GL_DEPTH_TEST);
 
-            _spline = new List<SplinePoint>();
+            _spline = new List<Spline>();
+            _curSpline = new List<SplinePoint>();
             _currPqList = new List<Piquet>();
+            _editPoint = null;
         }
 
         private static Point GetSplinePoint(SplinePoint spline0, SplinePoint spline1, double t)
@@ -71,37 +75,13 @@ namespace ETopo
             };
         }
 
-        private static float Y(Spline spline0, Spline spline1, double t, double alpha)
+        private static Point Rotate(double x, double y, double alpha)
         {
-            return
-                (float)
-                    (spline0.Y*(2*t*t*t - 3*t*t + 1) + spline0.Rb*(t*t*t - 2*t*t + t) + spline1.Y*(-2*t*t*t + 3*t*t) +
-                     spline1.Ra*(t*t*t - t*t));
-        }
-
-        private static Spline Rotate(double x, double y, double alpha)
-        {
-            return new Spline
+            return new Point
             {
-                X = x*Math.Cos(alpha) - y*Math.Sin(alpha),
-                Y = x*Math.Sin(alpha) + y*Math.Cos(alpha)
+                X = (float)(x*Math.Cos(alpha) - y*Math.Sin(alpha)),
+                Y = (float)(x*Math.Sin(alpha) + y*Math.Cos(alpha))
             };
-        }
-        
-        private static void GetVector(IList<Spline> lst)
-        {
-            for (var i = 1; i < lst.Count - 2; i++)
-            {
-                var g1 = (lst[i].Y - lst[i - 1].Y) * (1 + lst[i].Bias);
-                var g2 = (lst[i + 1].Y - lst[i].Y) * (1 - lst[i].Bias);
-                var g3 = g2 - g1;
-                lst[i].Ra = (1 - lst[1].Tens) * (g1 + 0.5 * g3 * (1 + lst[i].Cont));
-                lst[i].Rb = (1 - lst[1].Tens) * (g1 + 0.5 * g3 * (1 - lst[i].Cont));
-            }
-            lst[0].Ra = lst[1].Y - lst[0].Y;
-            lst[0].Rb = (1.5 * (lst[1].Y - lst[0].Y) - 0.5 * lst[1].Ra) * (1 - lst[0].Tens);
-            lst[lst.Count - 1].Rb = (1.5 * (lst[lst.Count - 1].Y - lst[lst.Count - 2].Y) - 0.5 * lst[lst.Count - 2].Ra) * (1 - lst[lst.Count - 1].Tens);
-            lst[lst.Count - 1].Ra = lst[lst.Count - 1].Y - lst[lst.Count - 2].Y;
         }
         
         private void btBuild_Click(object sender, EventArgs e)
@@ -122,7 +102,6 @@ namespace ETopo
                 max = Math.Max(max, piquet.Y);
             }
 
-            var glScale = 1 / max;
             if (cbTrapez.Checked)
             {
                 foreach (
@@ -229,31 +208,73 @@ namespace ETopo
             }
 
             Gl.glColor3f(0.0f, 0.0f, 0.0f);
-            Gl.glBegin(Gl.GL_LINES);
-            for (var i = 0; i < _spline.Count - 1; i++)
+            foreach (var spline in _spline)
             {
-                double t = 0;
-                while (t < 1)
+                Gl.glBegin(Gl.GL_LINES);
+                for (var i = 0; i < spline.PointList.Count - 1; i++)
                 {
-                    var point = GetSplinePoint(_spline[i], _spline[i + 1], t);
-                    Gl.glVertex2d(point.X*_scale + _moveX, point.Y*_scale + _moveY);
-                    t += 0.1;
+                    double t = 0;
+                    while (t < 1)
+                    {
+                        var point = GetSplinePoint(spline.PointList[i], spline.PointList[i + 1], t);
+                        Gl.glVertex2d(point.X*_scale + _moveX, point.Y*_scale + _moveY);
+                        t += 0.1;
+                    }
                 }
+                Gl.glEnd();
             }
-            Gl.glEnd();
+            
             
             Gl.glPointSize(5);
             Gl.glBegin(Gl.GL_POINTS);
-            foreach (var point in _spline)
+            foreach (var spline in _spline)
             {
-                Gl.glColor3f(0.5f, 0.5f, 0.5f);
-                Gl.glVertex2d((float) (point.Point.X*_scale + _moveX), (float) (point.Point.Y*_scale + _moveY));
-                Gl.glColor3f(0.0f, 0.0f, 1.0f);
-                Gl.glVertex2d((float) (point.Ra.X*_scale + _moveX), (float) (point.Ra.Y*_scale + _moveY));
-                Gl.glVertex2d((float) (point.Rb.X*_scale + _moveX), (float) (point.Rb.Y*_scale + _moveY));
+                foreach (var point in spline.PointList)
+                {
+                    Gl.glColor3f(0.5f, 0.5f, 0.5f);
+                    Gl.glVertex2d((float) (point.Point.X*_scale + _moveX), (float) (point.Point.Y*_scale + _moveY));
+                    Gl.glColor3f(0.0f, 0.0f, 1.0f);
+                    Gl.glVertex2d(
+                        (float) ((point.Point.X + point.Ra.X/3)*_scale + _moveX),
+                        (float) ((point.Point.Y + point.Ra.Y/3)*_scale + _moveY));
+                    Gl.glVertex2d(
+                        (float) ((point.Point.X - point.Rb.X/3)*_scale + _moveX),
+                        (float) ((point.Point.Y - point.Rb.Y/3)*_scale + _moveY));
+                }
             }
             Gl.glEnd();
 
+            Gl.glColor3f(0.8f, 1.0f, 0.0f);
+            Gl.glBegin(Gl.GL_LINES);
+                for (var i = 0; i < _curSpline.Count - 1; i++)
+                {
+                    double t = 0;
+                    while (t < 1)
+                    {
+                        var point = GetSplinePoint(_curSpline[i], _curSpline[i + 1], t);
+                        Gl.glVertex2d(point.X * _scale + _moveX, point.Y * _scale + _moveY);
+                        t += 0.1;
+                    }
+                }
+            
+            Gl.glEnd();
+
+            Gl.glPointSize(5);
+            Gl.glBegin(Gl.GL_POINTS);
+                foreach (var point in _curSpline)
+                {
+                    Gl.glColor3f(0.6f, 0.6f, 0.0f);
+                    Gl.glVertex2d((float)(point.Point.X * _scale + _moveX), (float)(point.Point.Y * _scale + _moveY));
+                    Gl.glColor3f(0.3f, 0.3f, 0.0f);
+                    Gl.glVertex2d(
+                        (float)((point.Point.X + point.Ra.X / 3) * _scale + _moveX),
+                        (float)((point.Point.Y + point.Ra.Y / 3) * _scale + _moveY));
+                    Gl.glVertex2d(
+                        (float)((point.Point.X - point.Rb.X / 3) * _scale + _moveX),
+                        (float)((point.Point.Y - point.Rb.Y / 3) * _scale + _moveY));
+                }
+            
+            Gl.glEnd();
             
             Gl.glFlush();
             anT.Invalidate();
@@ -274,14 +295,6 @@ namespace ETopo
                 Glut.glutBitmapCharacter(Glut.GLUT_BITMAP_9_BY_15, liter);
             }
         } 
-
-        private void anT_Click(object sender, EventArgs e)
-        {
-            foreach (var piquet in PqList)
-            {
-                //if(piquet.X==e)
-            }
-        }
 
         private void tVis_Tick(object sender, EventArgs e)
         {
@@ -322,8 +335,11 @@ namespace ETopo
             }
             else
             {
-                var s = new SplinePoint((float) lineX, (float) lineY, _spline);
-                _spline.Add(s);
+                if (rbAddSpline.Checked)
+                {
+                    var s = new SplinePoint((float) lineX, (float) lineY, _curSpline);
+                    _curSpline.Add(s);
+                }
             }
             if (_splineX != null && _splineY != null)
             {
@@ -335,12 +351,54 @@ namespace ETopo
 
         private void anT_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
+            if (e.Button != MouseButtons.Left) return;
+            var lineX = (e.X*_devX - _moveX)/_scale;
+            var lineY = ((anT.Height - e.Y)*_devY - _moveY)/_scale;
+            foreach (var splinePoint in _spline.SelectMany(spline => spline.PointList))
             {
-                _move = true;
-                _dX = e.X;
-                _dY = e.Y;
+                if (Math.Abs(lineX - splinePoint.Point.X) < 0.3 &&
+                    Math.Abs(lineY - splinePoint.Point.Y) < 0.3)
+                {
+                    _editPoint = new EditPoint(splinePoint, "point");
+                    return;
+                }
+                if (Math.Abs(lineX - (splinePoint.Point.X + splinePoint.Ra.X/3)) < 0.3 &&
+                    Math.Abs(lineY - (splinePoint.Point.Y + splinePoint.Ra.Y/3)) < 0.3)
+                {
+                    _editPoint = new EditPoint(splinePoint, "rb");
+                    return;
+                }
+                if (Math.Abs(lineX - (splinePoint.Point.X - splinePoint.Rb.X/3)) < 0.3 &&
+                    Math.Abs(lineY - (splinePoint.Point.Y - splinePoint.Rb.Y/3)) < 0.3)
+                {
+                    _editPoint = new EditPoint(splinePoint, "ra");
+                    return;
+                }
             }
+            foreach (var splinePoint in _curSpline)
+            {
+                if (Math.Abs(lineX - splinePoint.Point.X) < 0.3 &&
+                    Math.Abs(lineY - splinePoint.Point.Y) < 0.3)
+                {
+                    _editPoint = new EditPoint(splinePoint, "point");
+                    return;
+                }
+                if (Math.Abs(lineX - (splinePoint.Point.X + splinePoint.Ra.X / 3)) < 0.3 &&
+                    Math.Abs(lineY - (splinePoint.Point.Y + splinePoint.Ra.Y / 3)) < 0.3)
+                {
+                    _editPoint = new EditPoint(splinePoint, "rb");
+                    return;
+                }
+                if (Math.Abs(lineX - (splinePoint.Point.X - splinePoint.Rb.X / 3)) < 0.3 &&
+                    Math.Abs(lineY - (splinePoint.Point.Y - splinePoint.Rb.Y / 3)) < 0.3)
+                {
+                    _editPoint = new EditPoint(splinePoint, "ra");
+                    return;
+                }
+            }
+            _move = true;
+            _dX = e.X;
+            _dY = e.Y;
         }
 
         private void anT_MouseMove(object sender, MouseEventArgs e)
@@ -363,15 +421,40 @@ namespace ETopo
                 {
                     _moveY += 0.2f;
                 }
+                _dX = e.X;
+                _dY = e.Y; 
             }
-            _dX = e.X;
-            _dY = e.Y; 
+            if (rbEditSpline.Checked&&_editPoint!=null)
+            {
+                var lineX = (e.X*_devX - _moveX)/_scale;
+                var lineY = ((anT.Height - e.Y)*_devY - _moveY)/_scale;
+                switch (_editPoint.PointName)
+                {
+                    case "point":
+                        _editPoint.Point.Point.X = (float)lineX;
+                        _editPoint.Point.Point.Y = (float)lineY;
+                        break;
+                    case "ra":
+                        _editPoint.Point.Ra.X = (float) (_editPoint.Point.Point.X - lineX)*3;
+                        _editPoint.Point.Ra.Y = (float) (_editPoint.Point.Point.Y - lineY)*3;
+                        _editPoint.Point.Rb.X = (float) (_editPoint.Point.Point.X - lineX)*3;
+                        _editPoint.Point.Rb.Y = (float) (_editPoint.Point.Point.Y - lineY)*3;
+                        break;
+                    case "rb":
+                        _editPoint.Point.Ra.X = (float) (lineX - _editPoint.Point.Point.X)*3;
+                        _editPoint.Point.Ra.Y = (float) (lineY - _editPoint.Point.Point.Y)*3;
+                        _editPoint.Point.Rb.X = (float) (lineX - _editPoint.Point.Point.X)*3;
+                        _editPoint.Point.Rb.Y = (float) (lineY - _editPoint.Point.Point.Y)*3;
+                        break;
+                }
+            }
 
         }
 
         private void anT_MouseUp(object sender, MouseEventArgs e)
         {
             _move = false;
+            _editPoint = null;
         }
 
         private void anT_MouseWheel(object sender, MouseEventArgs e)
@@ -449,13 +532,26 @@ namespace ETopo
         private void cbSpline_CheckedChanged(object sender, EventArgs e)
         {
             if (cbSpline.Checked)
+            {
                 cbTrapez.Checked = true;
+            }
+            rbAddSpline.Enabled = cbSpline.Checked;
+            rbEditSpline.Enabled = cbSpline.Checked;
+            rbAddSpline.Checked = cbSpline.Checked;
+            rbEditSpline.Checked = false;
         }
 
         private void cbTrapez_CheckedChanged(object sender, EventArgs e)
         {
             if (!cbTrapez.Checked)
                 cbSpline.Checked = false;
+        }
+
+        private void anT_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar != 13 || !cbSpline.Checked) return;
+            _spline.Add(new Spline(_curSpline));
+            _curSpline = new List<SplinePoint>();
         }
 
     }

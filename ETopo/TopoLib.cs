@@ -353,27 +353,5 @@ namespace ETopo
                     }
             }
         }
-
-        /// <summary>
-        /// Направление вектора сплайна
-        /// </summary>
-        /// <param type="List(Piquet)" name="lst">Список точек сплайна</param>
-        private static void GetVector(List<Spline> lst)
-        {
-            for (var i = 1; i < lst.Count - 2; i++)
-            {
-                var g1 = (lst[i].Y - lst[i - 1].Y)*(1 + lst[i].Bias);
-                var g2 = (lst[i + 1].Y - lst[i].Y)*(1 - lst[i].Bias);
-                var g3 = g2 - g1;
-                lst[i].Ra = (1 - lst[1].Tens)*(g1 + 0.5*g3*(1 + lst[i].Cont));
-                lst[i].Rb = (1 - lst[1].Tens)*(g1 + 0.5*g3*(1 - lst[i].Cont));
-            }
-            lst[0].Ra = lst[1].Y - lst[0].Y;
-            lst[0].Rb = (1.5*(lst[1].Y - lst[0].Y) - 0.5*lst[1].Ra)*(1 - lst[0].Tens);
-            lst[lst.Count - 1].Rb = (1.5*(lst[lst.Count - 1].Y - lst[lst.Count - 2].Y) - 0.5*lst[lst.Count - 2].Ra)*
-                                    (1 - lst[lst.Count - 1].Tens);
-            lst[lst.Count - 1].Ra = lst[lst.Count - 1].Y - lst[lst.Count - 2].Y;
-        }
-
     }
 }
