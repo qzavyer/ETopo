@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TestRun id="614735e3-5c98-4e9b-bde3-abb04d501792" name="qzavyer@SAHALIN 2015-02-13 00:11:32" runUser="sahalin\qzavyer" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <TestSettings name="Локальные" id="74841a33-77c8-41e6-acd7-6afa2e4fcb45">
+    <Description>Это - параметры по умолчанию для локального тестового запуска.</Description>
+    <Deployment enabled="false" runDeploymentRoot="qzavyer_SAHALIN 2015-02-13 00_11_32">
+      <DeploymentItem filename="C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopo\bin\Debug\ETopo.exe" />
+    </Deployment>
+    <Execution>
+      <TestTypeSpecific />
+      <AgentRule name="Execution Agents">
+      </AgentRule>
+    </Execution>
+  </TestSettings>
+  <Times creation="2015-02-13T00:11:32.8176000+05:00" queuing="2015-02-13T00:11:35.0476000+05:00" start="2015-02-13T00:11:35.1516000+05:00" finish="2015-02-13T00:12:45.5516000+05:00" />
+  <ResultSummary outcome="Failed">
+    <Counters total="1" executed="1" error="0" failed="1" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" passed="0" completed="0" inProgress="0" pending="0" />
+  </ResultSummary>
+  <TestDefinitions>
+    <UnitTest name="TestGetTrace" storage="c:\users\qzavyer\documents\visual studio 2010\projects\etopo\etopotest\bin\debug\etopotest.dll" id="5f945809-9392-5d79-599a-9df702a56168">
+      <Execution id="abb01890-f044-4a69-9abb-b2c8eb047e33" />
+      <TestMethod codeBase="C:/Users/qzavyer/Documents/Visual Studio 2010/Projects/ETopo/ETopoTest/bin/Debug/ETopoTest.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="ETopoTest.TopoListTest, ETopoTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="TestGetTrace" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestLists>
+    <TestList name="Отсутствующие в списке результаты" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="Все загруженные результаты" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <TestEntries>
+    <TestEntry testId="5f945809-9392-5d79-599a-9df702a56168" executionId="abb01890-f044-4a69-9abb-b2c8eb047e33" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <Results>
+    <UnitTestResult executionId="abb01890-f044-4a69-9abb-b2c8eb047e33" testId="5f945809-9392-5d79-599a-9df702a56168" testName="TestGetTrace" computerName="SAHALIN" duration="00:01:09.4129245" startTime="2015-02-13T00:11:35.2706000+05:00" endTime="2015-02-13T00:12:45.3646000+05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="abb01890-f044-4a69-9abb-b2c8eb047e33">
+      <Output>
+        <ErrorInfo>
+          <Message>Ошибка в Assert.AreEqual. Ожидается: &lt;19&gt;. Фактически: &lt;18&gt;. </Message>
+          <StackTrace>   в ETopoTest.TopoListTest.TestGetTrace() в C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopoTest\UnitTest1.cs:строка 89
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+</TestRun>

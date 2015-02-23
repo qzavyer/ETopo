@@ -1,0 +1,8 @@
+C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopoTest\bin\Debug\ETopoTest.dll
+C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopoTest\bin\Debug\ETopoTest.pdb
+C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopoTest\bin\Debug\ETopo.exe
+C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopoTest\bin\Debug\Ionic.Zip.dll
+C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopoTest\bin\Debug\ETopo.pdb
+C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopoTest\obj\Debug\ETopoTest.csprojResolveAssemblyReference.cache
+C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopoTest\obj\Debug\ETopoTest.dll
+C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopoTest\obj\Debug\ETopoTest.pdb

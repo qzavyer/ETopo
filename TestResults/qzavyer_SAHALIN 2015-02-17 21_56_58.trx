@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TestRun id="35d50dc2-e67d-4bf7-969b-a41d12d34af9" name="qzavyer@SAHALIN 2015-02-17 21:56:58" runUser="sahalin\qzavyer" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <TestSettings name="Локальные" id="74841a33-77c8-41e6-acd7-6afa2e4fcb45">
+    <Description>Это - параметры по умолчанию для локального тестового запуска.</Description>
+    <Deployment enabled="false" runDeploymentRoot="qzavyer_SAHALIN 2015-02-17 21_56_58">
+      <DeploymentItem filename="C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopo\bin\Debug\ETopo.exe" />
+    </Deployment>
+    <Execution>
+      <TestTypeSpecific />
+      <AgentRule name="Execution Agents">
+      </AgentRule>
+    </Execution>
+  </TestSettings>
+  <Times creation="2015-02-17T21:56:58.0758000+05:00" queuing="2015-02-17T21:56:59.0478000+05:00" start="2015-02-17T21:56:59.1538000+05:00" finish="2015-02-17T21:57:19.0568000+05:00" />
+  <ResultSummary outcome="Error">
+    <Counters total="1" executed="1" error="0" failed="0" timeout="0" aborted="1" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" passed="0" completed="0" inProgress="0" pending="0" />
+    <RunInfos>
+      <RunInfo computerName="SAHALIN" outcome="Error" timestamp="2015-02-17T21:57:19.0558000+05:00">
+        <Text>Неожиданный выход из тестового хост-процесса.</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+  <TestDefinitions>
+    <UnitTest name="TestGetTrace" storage="c:\users\qzavyer\documents\visual studio 2010\projects\etopo\etopotest\bin\debug\etopotest.dll" id="5f945809-9392-5d79-599a-9df702a56168">
+      <Execution id="4c1ce98f-51ca-43af-b56c-6f4d6da0fd16" />
+      <TestMethod codeBase="C:/Users/qzavyer/Documents/Visual Studio 2010/Projects/ETopo/ETopoTest/bin/Debug/ETopoTest.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="ETopoTest.TopoListTest, ETopoTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="TestGetTrace" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestLists>
+    <TestList name="Отсутствующие в списке результаты" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="Все загруженные результаты" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <TestEntries>
+    <TestEntry testId="5f945809-9392-5d79-599a-9df702a56168" executionId="4c1ce98f-51ca-43af-b56c-6f4d6da0fd16" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <Results>
+    <UnitTestResult executionId="4c1ce98f-51ca-43af-b56c-6f4d6da0fd16" testId="5f945809-9392-5d79-599a-9df702a56168" testName="TestGetTrace" computerName="SAHALIN" duration="00:00:19.8030000" startTime="2015-02-17T21:56:59.2538000+05:00" endTime="2015-02-17T21:57:19.0568000+05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Aborted" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4c1ce98f-51ca-43af-b56c-6f4d6da0fd16">
+    </UnitTestResult>
+  </Results>
+</TestRun>

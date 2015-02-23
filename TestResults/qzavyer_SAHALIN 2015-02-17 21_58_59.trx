@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TestRun id="8bbd956f-2071-4617-bd39-230b6b7d32e3" name="qzavyer@SAHALIN 2015-02-17 21:58:59" runUser="sahalin\qzavyer" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <TestSettings name="Локальные" id="74841a33-77c8-41e6-acd7-6afa2e4fcb45">
+    <Description>Это - параметры по умолчанию для локального тестового запуска.</Description>
+    <Deployment enabled="false" runDeploymentRoot="qzavyer_SAHALIN 2015-02-17 21_58_59">
+      <DeploymentItem filename="C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopo\bin\Debug\ETopo.exe" />
+    </Deployment>
+    <Execution>
+      <TestTypeSpecific />
+      <AgentRule name="Execution Agents">
+      </AgentRule>
+    </Execution>
+  </TestSettings>
+  <Times creation="2015-02-17T21:58:59.6938000+05:00" queuing="2015-02-17T21:59:00.6578000+05:00" start="2015-02-17T21:59:00.7928000+05:00" finish="2015-02-17T21:59:17.7228000+05:00" />
+  <ResultSummary outcome="Completed">
+    <Counters total="1" executed="1" passed="1" error="0" failed="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+  </ResultSummary>
+  <TestDefinitions>
+    <UnitTest name="TestGetTrace" storage="c:\users\qzavyer\documents\visual studio 2010\projects\etopo\etopotest\bin\debug\etopotest.dll" id="5f945809-9392-5d79-599a-9df702a56168">
+      <Execution id="01838afc-9bf2-406d-8eef-e221a62415fc" />
+      <TestMethod codeBase="C:/Users/qzavyer/Documents/Visual Studio 2010/Projects/ETopo/ETopoTest/bin/Debug/ETopoTest.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="ETopoTest.TopoListTest, ETopoTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="TestGetTrace" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestLists>
+    <TestList name="Отсутствующие в списке результаты" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="Все загруженные результаты" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <TestEntries>
+    <TestEntry testId="5f945809-9392-5d79-599a-9df702a56168" executionId="01838afc-9bf2-406d-8eef-e221a62415fc" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <Results>
+    <UnitTestResult executionId="01838afc-9bf2-406d-8eef-e221a62415fc" testId="5f945809-9392-5d79-599a-9df702a56168" testName="TestGetTrace" computerName="SAHALIN" duration="00:00:16.1764902" startTime="2015-02-17T21:59:00.9168000+05:00" endTime="2015-02-17T21:59:17.6528000+05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="01838afc-9bf2-406d-8eef-e221a62415fc">
+    </UnitTestResult>
+  </Results>
+</TestRun>
