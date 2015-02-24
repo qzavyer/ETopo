@@ -105,7 +105,7 @@ namespace ETopo
             return result;
         }
 
-        public static List<Ring> GetAllRing(List<Trace> trcLst, Piquet start,List<Piquet> piquets )
+        public static List<Ring> GetAllRing(List<Trace> trcLst, List<Piquet> piquets, Piquet start)
         {
             var result = new List<Ring>();
             var pqTemp = new List<Piquet> {start};

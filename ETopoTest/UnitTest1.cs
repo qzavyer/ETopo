@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using ETopo;
@@ -123,7 +122,7 @@ namespace ETopoTest
             var pq0 = new Piquet { Name = "0", Step = 0, X = 0, Y = 0, Z = 0 };
             var pqList = new List<Piquet> { pq0 };
             TopoLib.GetTrace(_trcLst, pqList, pq0);
-            var rings = TopoLib.GetAllRing(_trcLst, pq0, pqList);
+            var rings = TopoLib.GetAllRing(_trcLst, pqList, pq0);
 
             var result = true;
 
@@ -149,7 +148,7 @@ namespace ETopoTest
             var pq0 = new Piquet { Name = "0", Step = 0, X = 0, Y = 0, Z = 0 };
             var pqList = new List<Piquet> { pq0 };
             TopoLib.GetTrace(_trcLst, pqList, pq0);
-            var rings = TopoLib.GetAllRing(_trcLst, pq0, pqList);
+            var rings = TopoLib.GetAllRing(_trcLst, pqList, pq0);
 
             var lengths = new List<double>();
 
@@ -166,7 +165,7 @@ namespace ETopoTest
             var pq0 = new Piquet { Name = "0", Step = 0, X = 0, Y = 0, Z = 0 };
             var pqList = new List<Piquet> { pq0 };
             TopoLib.GetTrace(_trcLst, pqList, pq0);
-            var rings = TopoLib.GetAllRing(_trcLst, pq0, pqList);
+            var rings = TopoLib.GetAllRing(_trcLst, pqList, pq0);
             var offsets = new List<Vector>();
             if (rings.Count > 0)
             {
@@ -183,7 +182,7 @@ namespace ETopoTest
             var pq0 = new Piquet { Name = "0", Step = 0, X = 0, Y = 0, Z = 0 };
             var pqList = new List<Piquet> { pq0 };
             TopoLib.GetTrace(_trcLst, pqList, pq0);
-            var rings = TopoLib.GetAllRing(_trcLst, pq0, pqList);
+            var rings = TopoLib.GetAllRing(_trcLst, pqList, pq0);
             foreach (var ring in rings)
             {
                 foreach (var point in ring.Points)

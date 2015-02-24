@@ -69,5 +69,32 @@ namespace ETopo.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на ETopo.
+        /// </summary>
+        internal static string ETopo {
+            get {
+                return ResourceManager.GetString("ETopo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Ошибка чтения файла.
+        /// </summary>
+        internal static string FileReadError {
+            get {
+                return ResourceManager.GetString("FileReadError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Сохранено.
+        /// </summary>
+        internal static string Saved {
+            get {
+                return ResourceManager.GetString("Saved", resourceCulture);
+            }
+        }
     }
 }

@@ -1,10 +1,10 @@
 C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopo\bin\Debug\ETopo.exe
 C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopo\bin\Debug\ETopo.pdb
 C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopo\bin\Debug\Ionic.Zip.dll
-C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopo\obj\x86\Debug\ETopo.Form1.resources
 C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopo\obj\x86\Debug\ETopo.Graph.resources
 C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopo\obj\x86\Debug\ETopo.Properties.Resources.resources
 C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopo\obj\x86\Debug\ETopo.FrTopoData.resources
 C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopo\obj\x86\Debug\ETopo.csproj.GenerateResource.Cache
 C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopo\obj\x86\Debug\ETopo.exe
 C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopo\obj\x86\Debug\ETopo.pdb
+C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopo\obj\x86\Debug\ETopo.FrMain.resources
