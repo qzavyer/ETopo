@@ -14,18 +14,21 @@ namespace ETopo
 
     public class Spline
     {
+        public string Name { get; set; }
         public SplineType Type { get; set; }
         public List<SplinePoint> PointList { get; set; }
         public SplineDirrection Dirrection { get; set; }
 
         public Spline(List<SplinePoint> points)
         {
+            Name = "";
             Type = SplineType.Wall;
             PointList = points;
             Dirrection = SplineDirrection.Left;
         }
         public Spline(SplineType type, List<SplinePoint> points, SplineDirrection dirrection)
         {
+            Name = "";
             Type = type;
             PointList = points;
             Dirrection = dirrection;

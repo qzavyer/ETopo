@@ -53,12 +53,14 @@ namespace ETopo
             Glu.gluOrtho2D(0.0, screenW, 0.0, screenH);
             Gl.glMatrixMode(Gl.GL_MODELVIEW);
             Gl.glLoadIdentity();
-            Gl.glEnable(Gl.GL_DEPTH_TEST);
+            //Gl.glEnable(Gl.GL_DEPTH_TEST);
 
             _spline = new List<Spline>();
             _curSpline = new List<SplinePoint>();
             _currPqList = new List<Piquet>();
             _editPoint = null;
+
+            tVis.Enabled = true;
         }
 
         private static Point GetSplinePoint(SplinePoint spline0, SplinePoint spline1, double t)
@@ -83,12 +85,7 @@ namespace ETopo
                 Y = (float)(x*Math.Sin(alpha) + y*Math.Cos(alpha))
             };
         }
-        
-        private void btBuild_Click(object sender, EventArgs e)
-        {
-            tVis.Enabled = true;
-        }
-
+       
         private void DrawMap()
         {
             Gl.glClear(Gl.GL_COLOR_BUFFER_BIT | Gl.GL_DEPTH_BUFFER_BIT);
@@ -207,10 +204,18 @@ namespace ETopo
                 PrintText2D((float)(piquet.X*_scale+_moveX), (float)(piquet.Y*_scale+_moveY), piquet.Name);
             }
 
-            Gl.glColor3f(0.0f, 0.0f, 0.0f);
+            
             foreach (var spline in _spline)
             {
-                Gl.glBegin(Gl.GL_LINES);
+                if (ReferenceEquals(spline.Name, listBox1.SelectedItem))
+                {
+                    Gl.glColor3f(1.0f, 0.5f, 0.5f); 
+                }
+                else
+                {
+                    Gl.glColor3f(0.0f, 0.0f, 0.0f);
+                }
+                Gl.glBegin(Gl.GL_LINE_STRIP);
                 for (var i = 0; i < spline.PointList.Count - 1; i++)
                 {
                     double t = 0;
@@ -280,7 +285,7 @@ namespace ETopo
             anT.Invalidate();
         }
 
-        private void PrintText2D(float x, float y, string text)
+        private static void PrintText2D(float x, float y, string text)
         {
 
             // устанавливаем позицию вывода растровых символов 
@@ -299,16 +304,6 @@ namespace ETopo
         private void tVis_Tick(object sender, EventArgs e)
         {
             DrawMap();
-        }
-
-        private void btZoomIn_Click(object sender, EventArgs e)
-        {
-            _scale *= 1.1;
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            _scale /= 1.1;
         }
 
         private void anT_MouseClick(object sender, MouseEventArgs e)
@@ -487,7 +482,7 @@ namespace ETopo
             //  Glu.gluPerspective(0, (float)anT.Width / anT.Height, 0, 0);
             Gl.glMatrixMode(Gl.GL_MODELVIEW);
             Gl.glLoadIdentity();
-            Gl.glEnable(Gl.GL_DEPTH_TEST);
+            //Gl.glEnable(Gl.GL_DEPTH_TEST);
         }
 
         private void btClrLst_Click(object sender, EventArgs e)
@@ -549,9 +544,41 @@ namespace ETopo
 
         private void anT_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (e.KeyChar != 13 || !cbSpline.Checked) return;
-            _spline.Add(new Spline(_curSpline));
+            if (e.KeyChar != (char)Keys.Enter || !cbSpline.Checked) return;
+            var spline = new Spline(_curSpline) {Name = "Стена" + _spline.Count};
+            _spline.Add(spline);
+            listBox1.Items.Clear();
+            foreach (var spline1 in _spline.Where(s=>s.Type==SplineType.Wall))
+            {
+                listBox1.Items.Add(spline1.Name);
+            }
             _curSpline = new List<SplinePoint>();
+        }
+
+        private void listBox1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            //if (e.KeyChar != 13) return;
+            
+            
+        }
+
+        private void listBox1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyData == Keys.Delete)
+            {
+                var name = listBox1.SelectedItem;
+                _spline.RemoveAll(s => ReferenceEquals(s.Name, name));
+                listBox1.Items.Clear();
+                foreach (var spline1 in _spline.Where(s => s.Type == SplineType.Wall))
+                {
+                    listBox1.Items.Add(spline1.Name);
+                }
+            }
+        }
+
+        private void listBox1_MouseMove(object sender, MouseEventArgs e)
+        {
+            Text = e.Delta.ToString();
         }
 
     }

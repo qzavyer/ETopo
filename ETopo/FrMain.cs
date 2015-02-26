@@ -17,7 +17,7 @@ namespace ETopo
         private List<Trace> _traceList = new List<Trace>();
         private string _name;
         private string _date;
-        //private List<string> _autor;
+        private List<string> _autor;
 
         public FrMain()
         {
@@ -53,6 +53,21 @@ namespace ETopo
                                 {
                                     switch (reader.Name)
                                     {
+                                        case "team":
+                                            _autor = new List<string>();
+                                            break;
+                                        case "name":
+                                            reader.Read();
+                                            _autor.Add(reader.Value);
+                                            break;
+                                        case "date":
+                                            reader.Read();
+                                            _date = reader.Value;
+                                            break;
+                                        case "title":
+                                            reader.Read();
+                                            _name = reader.Value;
+                                            break;
                                         case "segment":
                                             dgTopo.Rows.Add();
                                             trc = new Trace();
@@ -339,10 +354,10 @@ namespace ETopo
                         writer.WriteStartElement("survey");
                         writer.WriteElementString("date", _date);
                         writer.WriteStartElement("team");
-                        /*foreach (var item in _autor)
+                        foreach (var item in _autor)
                         {
                             writer.WriteElementString("name", item);
-                        }*/
+                        }
                         writer.WriteEndElement();
                         foreach (var trace in _traceList)
                         {
@@ -416,11 +431,11 @@ namespace ETopo
 
         private void mData_Click(object sender, EventArgs e)
         {
-            var fr = new FrTopoData();
+            var fr = new FrTopoData {name = _name, date = _date, autor = _autor};
             fr.ShowDialog();
             _name = fr.name;
             _date = fr.date;
-//            _autor = fr.autor;
+            _autor = fr.autor;
         }
     }
 }

@@ -79,7 +79,6 @@
     <Compile Include="Piquet.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Quad.cs" />
     <Compile Include="Ring.cs" />
     <Compile Include="SimpleOpenGlControl.cs">
       <SubType>UserControl</SubType>

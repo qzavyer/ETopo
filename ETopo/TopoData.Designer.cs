@@ -64,7 +64,6 @@ namespace ETopo
             this.label2.Size = new System.Drawing.Size(72, 17);
             this.label2.TabIndex = 2;
             this.label2.Text = "Название";
-            this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // tbName
             // 
@@ -116,6 +115,7 @@ namespace ETopo
             this.MinimizeBox = false;
             this.Name = "FrTopoData";
             this.Text = "Данные съёмки";
+            this.Load += new System.EventHandler(this.FrTopoData_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

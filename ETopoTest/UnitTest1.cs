@@ -34,7 +34,28 @@ namespace ETopoTest
             new Trace {Azimuth = 161, Clino = 0, From = "10", To = "11", Tape = 2.2},
             new Trace {Azimuth = -57, Clino = 0, From = "8", To = "2", Tape = 2.4}
         };
-        
+        private readonly List<Piquet> _piqLst = new List<Piquet>
+            {
+                new Piquet {Name = "0", X = 0, Y = 0},
+                new Piquet {Name = "1", X = 5, Y = 0},
+                new Piquet {Name = "2", X = 8.642, Y = 2.092},
+                new Piquet {Name = "3", X = 9.577, Y = 4.942},
+                new Piquet {Name = "4", X = 11.241, Y = 6.052},
+                new Piquet {Name = "5", X = 12.577, Y = 4.942},
+                new Piquet {Name = "6", X = 13.425, Y = 2.591},
+                new Piquet {Name = "7", X = 12.571, Y = 1.358},
+                new Piquet {Name = "8", X = 10.661, Y = 0.764},
+                new Piquet {Name = "9", X = 14.169, Y = 5.539},
+                new Piquet {Name = "10", X = 15.71, Y = 4.264},
+                new Piquet {Name = "11", X = 16.426, Y = 2.184},
+                new Piquet {Name = "12", X = 4.98, Y = 6.909},
+                new Piquet {Name = "13", X = 5.838, Y = 7.747},
+                new Piquet {Name = "14", X = 5.838, Y = 9.747},
+                new Piquet {Name = "15", X = 4.98, Y = 10.850},
+                new Piquet {Name = "16", X = 3.785, Y = 9.943},
+                new Piquet {Name = "17", X = 2.932, Y = 8.134},
+                new Piquet {Name = "18", X = 3.203, Y = 6.153},
+            };
         #region Дополнительные атрибуты тестирования
         //
         // При написании тестов можно использовать следующие дополнительные атрибуты:
@@ -60,28 +81,6 @@ namespace ETopoTest
         [TestMethod]
         public void TestGetTrace()
         {
-            var piqLst = new List<Piquet>
-            {
-                new Piquet {Name = "0", X = 0, Y = 0},
-                new Piquet {Name = "1", X = 5, Y = 0},
-                new Piquet {Name = "2", X = 8.642, Y = 2.092},
-                new Piquet {Name = "3", X = 9.577, Y = 4.942},
-                new Piquet {Name = "4", X = 11.241, Y = 6.052},
-                new Piquet {Name = "5", X = 12.577, Y = 4.942},
-                new Piquet {Name = "6", X = 13.425, Y = 2.591},
-                new Piquet {Name = "7", X = 12.571, Y = 1.358},
-                new Piquet {Name = "8", X = 10.661, Y = 0.764},
-                new Piquet {Name = "9", X = 14.169, Y = 5.539},
-                new Piquet {Name = "10", X = 15.71, Y = 4.264},
-                new Piquet {Name = "11", X = 16.426, Y = 2.184},
-                new Piquet {Name = "12", X = 4.98, Y = 6.909},
-                new Piquet {Name = "13", X = 5.838, Y = 7.747},
-                new Piquet {Name = "14", X = 5.838, Y = 9.747},
-                new Piquet {Name = "15", X = 4.98, Y = 10.850},
-                new Piquet {Name = "16", X = 3.785, Y = 9.943},
-                new Piquet {Name = "17", X = 2.932, Y = 8.134},
-                new Piquet {Name = "18", X = 3.203, Y = 6.153},
-            };
             var pq0 = new Piquet {Name = "0", Step = 0, X = 0, Y = 0, Z = 0};
             var res = new List<Piquet> { pq0 };
             TopoLib.GetTrace(_trcLst, res, pq0);
@@ -90,7 +89,7 @@ namespace ETopoTest
             foreach (var piquet in res)
             {
                 var pq = piquet;
-                foreach (var piquet1 in piqLst.Where(p=>p.Name==pq.Name))
+                foreach (var piquet1 in _piqLst.Where(p=>p.Name==pq.Name))
                 {
                     deltaX += Math.Abs(pq.X - piquet1.X);
                     deltaY += Math.Abs(pq.Y - piquet1.Y);
@@ -182,6 +181,16 @@ namespace ETopoTest
             var pq0 = new Piquet { Name = "0", Step = 0, X = 0, Y = 0, Z = 0 };
             var pqList = new List<Piquet> { pq0 };
             TopoLib.GetTrace(_trcLst, pqList, pq0);
+
+            var sumBefore = 0D;
+            foreach (var piquet in pqList)
+            {
+                sumBefore += _piqLst.Where(p => p.Name == piquet.Name)
+                        .Sum(piquet1 =>
+                                (Math.Abs(piquet.X - piquet1.X) + Math.Abs(piquet.Y - piquet1.Y) +
+                                 Math.Abs(piquet.Z - piquet1.Z)));
+            }
+
             var rings = TopoLib.GetAllRing(_trcLst, pqList, pq0);
             foreach (var ring in rings)
             {
@@ -192,7 +201,17 @@ namespace ETopoTest
                     TopoLib.PiquetsCorrection(ring, _trcLst, pqList, piquet, point.Offset);
                 }
             }
-            var result = true;
+
+            var sumAfter = 0D;
+            foreach (var piquet in pqList)
+            {
+                sumAfter += _piqLst.Where(p => p.Name == piquet.Name)
+                        .Sum(piquet1 =>
+                                (Math.Abs(piquet.X - piquet1.X) + Math.Abs(piquet.Y - piquet1.Y) +
+                                 Math.Abs(piquet.Z - piquet1.Z)));
+            }
+
+            var result = Math.Abs(sumBefore - sumAfter) > MathConst.Accuracy;
             Assert.AreEqual(result, true);
         }
     }

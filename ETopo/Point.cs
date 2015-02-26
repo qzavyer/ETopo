@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace ETopo
+﻿namespace ETopo
 {
     public class Point
     {

@@ -31,6 +31,8 @@
             this.components = new System.ComponentModel.Container();
             this.tVis = new System.Windows.Forms.Timer(this.components);
             this.panel1 = new System.Windows.Forms.Panel();
+            this.rbEditSpline = new System.Windows.Forms.RadioButton();
+            this.rbAddSpline = new System.Windows.Forms.RadioButton();
             this.cbSpline = new System.Windows.Forms.CheckBox();
             this.btListFilt = new System.Windows.Forms.Button();
             this.btClrLst = new System.Windows.Forms.Button();
@@ -39,15 +41,9 @@
             this.tbAddPqName = new System.Windows.Forms.TextBox();
             this.cbTrapez = new System.Windows.Forms.CheckBox();
             this.lbPiq = new System.Windows.Forms.ListBox();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.button1 = new System.Windows.Forms.Button();
-            this.btZoomIn = new System.Windows.Forms.Button();
-            this.btBuild = new System.Windows.Forms.Button();
             this.anT = new Tao.Platform.Windows.SimpleOpenGlControl();
-            this.rbAddSpline = new System.Windows.Forms.RadioButton();
-            this.rbEditSpline = new System.Windows.Forms.RadioButton();
+            this.listBox1 = new System.Windows.Forms.ListBox();
             this.panel1.SuspendLayout();
-            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // tVis
@@ -57,6 +53,7 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.listBox1);
             this.panel1.Controls.Add(this.rbEditSpline);
             this.panel1.Controls.Add(this.rbAddSpline);
             this.panel1.Controls.Add(this.cbSpline);
@@ -72,6 +69,30 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(200, 629);
             this.panel1.TabIndex = 8;
+            // 
+            // rbEditSpline
+            // 
+            this.rbEditSpline.AutoSize = true;
+            this.rbEditSpline.Enabled = false;
+            this.rbEditSpline.Location = new System.Drawing.Point(22, 427);
+            this.rbEditSpline.Name = "rbEditSpline";
+            this.rbEditSpline.Size = new System.Drawing.Size(110, 21);
+            this.rbEditSpline.TabIndex = 9;
+            this.rbEditSpline.TabStop = true;
+            this.rbEditSpline.Text = "radioButton2";
+            this.rbEditSpline.UseVisualStyleBackColor = true;
+            // 
+            // rbAddSpline
+            // 
+            this.rbAddSpline.AutoSize = true;
+            this.rbAddSpline.Enabled = false;
+            this.rbAddSpline.Location = new System.Drawing.Point(22, 400);
+            this.rbAddSpline.Name = "rbAddSpline";
+            this.rbAddSpline.Size = new System.Drawing.Size(110, 21);
+            this.rbAddSpline.TabIndex = 8;
+            this.rbAddSpline.TabStop = true;
+            this.rbAddSpline.Text = "radioButton1";
+            this.rbAddSpline.UseVisualStyleBackColor = true;
             // 
             // cbSpline
             // 
@@ -148,51 +169,10 @@
             // 
             this.lbPiq.FormattingEnabled = true;
             this.lbPiq.ItemHeight = 16;
-            this.lbPiq.Location = new System.Drawing.Point(6, 37);
+            this.lbPiq.Location = new System.Drawing.Point(6, 12);
             this.lbPiq.Name = "lbPiq";
-            this.lbPiq.Size = new System.Drawing.Size(182, 164);
+            this.lbPiq.Size = new System.Drawing.Size(182, 180);
             this.lbPiq.TabIndex = 0;
-            // 
-            // panel2
-            // 
-            this.panel2.Controls.Add(this.button1);
-            this.panel2.Controls.Add(this.btZoomIn);
-            this.panel2.Controls.Add(this.btBuild);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel2.Location = new System.Drawing.Point(0, 0);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(925, 37);
-            this.panel2.TabIndex = 9;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(154, 3);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(25, 25);
-            this.button1.TabIndex = 10;
-            this.button1.Text = "-";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // btZoomIn
-            // 
-            this.btZoomIn.Location = new System.Drawing.Point(123, 3);
-            this.btZoomIn.Name = "btZoomIn";
-            this.btZoomIn.Size = new System.Drawing.Size(25, 25);
-            this.btZoomIn.TabIndex = 9;
-            this.btZoomIn.Text = "+";
-            this.btZoomIn.UseVisualStyleBackColor = true;
-            this.btZoomIn.Click += new System.EventHandler(this.btZoomIn_Click);
-            // 
-            // btBuild
-            // 
-            this.btBuild.Location = new System.Drawing.Point(12, 3);
-            this.btBuild.Name = "btBuild";
-            this.btBuild.Size = new System.Drawing.Size(105, 25);
-            this.btBuild.TabIndex = 8;
-            this.btBuild.Text = "Построить";
-            this.btBuild.UseVisualStyleBackColor = true;
-            this.btBuild.Click += new System.EventHandler(this.btBuild_Click);
             // 
             // anT
             // 
@@ -205,9 +185,9 @@
             this.anT.ColorBits = ((byte)(32));
             this.anT.DepthBits = ((byte)(16));
             this.anT.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.anT.Location = new System.Drawing.Point(0, 37);
+            this.anT.Location = new System.Drawing.Point(0, 0);
             this.anT.Name = "anT";
-            this.anT.Size = new System.Drawing.Size(925, 592);
+            this.anT.Size = new System.Drawing.Size(925, 629);
             this.anT.StencilBits = ((byte)(0));
             this.anT.TabIndex = 10;
             this.anT.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.anT_KeyPress);
@@ -217,29 +197,17 @@
             this.anT.MouseUp += new System.Windows.Forms.MouseEventHandler(this.anT_MouseUp);
             this.anT.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.anT_MouseWheel);
             // 
-            // rbAddSpline
+            // listBox1
             // 
-            this.rbAddSpline.AutoSize = true;
-            this.rbAddSpline.Enabled = false;
-            this.rbAddSpline.Location = new System.Drawing.Point(22, 400);
-            this.rbAddSpline.Name = "rbAddSpline";
-            this.rbAddSpline.Size = new System.Drawing.Size(110, 21);
-            this.rbAddSpline.TabIndex = 8;
-            this.rbAddSpline.TabStop = true;
-            this.rbAddSpline.Text = "radioButton1";
-            this.rbAddSpline.UseVisualStyleBackColor = true;
-            // 
-            // rbEditSpline
-            // 
-            this.rbEditSpline.AutoSize = true;
-            this.rbEditSpline.Enabled = false;
-            this.rbEditSpline.Location = new System.Drawing.Point(22, 427);
-            this.rbEditSpline.Name = "rbEditSpline";
-            this.rbEditSpline.Size = new System.Drawing.Size(110, 21);
-            this.rbEditSpline.TabIndex = 9;
-            this.rbEditSpline.TabStop = true;
-            this.rbEditSpline.Text = "radioButton2";
-            this.rbEditSpline.UseVisualStyleBackColor = true;
+            this.listBox1.FormattingEnabled = true;
+            this.listBox1.ItemHeight = 16;
+            this.listBox1.Location = new System.Drawing.Point(6, 454);
+            this.listBox1.Name = "listBox1";
+            this.listBox1.Size = new System.Drawing.Size(182, 164);
+            this.listBox1.TabIndex = 10;
+            this.listBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listBox1_KeyDown);
+            this.listBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.listBox1_KeyPress);
+            this.listBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.listBox1_MouseMove);
             // 
             // Graph
             // 
@@ -247,7 +215,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1125, 629);
             this.Controls.Add(this.anT);
-            this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Graph";
@@ -256,7 +223,6 @@
             this.Resize += new System.EventHandler(this.Graph_Resize);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -265,10 +231,6 @@
 
         private System.Windows.Forms.Timer tVis;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button btZoomIn;
-        private System.Windows.Forms.Button btBuild;
         public Tao.Platform.Windows.SimpleOpenGlControl anT;
         private System.Windows.Forms.ListBox lbPiq;
         private System.Windows.Forms.CheckBox cbTrapez;
@@ -280,5 +242,6 @@
         private System.Windows.Forms.CheckBox cbSpline;
         private System.Windows.Forms.RadioButton rbEditSpline;
         private System.Windows.Forms.RadioButton rbAddSpline;
+        private System.Windows.Forms.ListBox listBox1;
     }
 }
