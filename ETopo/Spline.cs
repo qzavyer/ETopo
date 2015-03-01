@@ -4,7 +4,8 @@ namespace ETopo
 {
     public enum SplineType
     {
-        Wall = 1
+        Wall = 1,
+        Precipice = 2
     }
     public enum SplineDirrection
     {
@@ -32,6 +33,13 @@ namespace ETopo
             Type = type;
             PointList = points;
             Dirrection = dirrection;
+        }
+        public Spline(SplineType type, List<SplinePoint> points)
+        {
+            Name = "";
+            Type = type;
+            PointList = points;
+            Dirrection = SplineDirrection.Left;
         }
     }
 

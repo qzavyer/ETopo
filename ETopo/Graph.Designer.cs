@@ -31,8 +31,9 @@
             this.components = new System.ComponentModel.Container();
             this.tVis = new System.Windows.Forms.Timer(this.components);
             this.panel1 = new System.Windows.Forms.Panel();
-            this.rbEditSpline = new System.Windows.Forms.RadioButton();
-            this.rbAddSpline = new System.Windows.Forms.RadioButton();
+            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.rbAddPrecipice = new System.Windows.Forms.RadioButton();
+            this.rbAddWall = new System.Windows.Forms.RadioButton();
             this.cbSpline = new System.Windows.Forms.CheckBox();
             this.btListFilt = new System.Windows.Forms.Button();
             this.btClrLst = new System.Windows.Forms.Button();
@@ -42,7 +43,6 @@
             this.cbTrapez = new System.Windows.Forms.CheckBox();
             this.lbPiq = new System.Windows.Forms.ListBox();
             this.anT = new Tao.Platform.Windows.SimpleOpenGlControl();
-            this.listBox1 = new System.Windows.Forms.ListBox();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -54,8 +54,8 @@
             // panel1
             // 
             this.panel1.Controls.Add(this.listBox1);
-            this.panel1.Controls.Add(this.rbEditSpline);
-            this.panel1.Controls.Add(this.rbAddSpline);
+            this.panel1.Controls.Add(this.rbAddPrecipice);
+            this.panel1.Controls.Add(this.rbAddWall);
             this.panel1.Controls.Add(this.cbSpline);
             this.panel1.Controls.Add(this.btListFilt);
             this.panel1.Controls.Add(this.btClrLst);
@@ -65,34 +65,46 @@
             this.panel1.Controls.Add(this.cbTrapez);
             this.panel1.Controls.Add(this.lbPiq);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel1.Location = new System.Drawing.Point(925, 0);
+            this.panel1.Location = new System.Drawing.Point(893, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(200, 629);
+            this.panel1.Size = new System.Drawing.Size(353, 629);
             this.panel1.TabIndex = 8;
             // 
-            // rbEditSpline
+            // listBox1
             // 
-            this.rbEditSpline.AutoSize = true;
-            this.rbEditSpline.Enabled = false;
-            this.rbEditSpline.Location = new System.Drawing.Point(22, 427);
-            this.rbEditSpline.Name = "rbEditSpline";
-            this.rbEditSpline.Size = new System.Drawing.Size(110, 21);
-            this.rbEditSpline.TabIndex = 9;
-            this.rbEditSpline.TabStop = true;
-            this.rbEditSpline.Text = "radioButton2";
-            this.rbEditSpline.UseVisualStyleBackColor = true;
+            this.listBox1.FormattingEnabled = true;
+            this.listBox1.ItemHeight = 16;
+            this.listBox1.Location = new System.Drawing.Point(6, 454);
+            this.listBox1.Name = "listBox1";
+            this.listBox1.Size = new System.Drawing.Size(182, 164);
+            this.listBox1.TabIndex = 10;
+            this.listBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listBox1_KeyDown);
+            this.listBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.listBox1_KeyPress);
+            this.listBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.listBox1_MouseMove);
             // 
-            // rbAddSpline
+            // rbAddPrecipice
             // 
-            this.rbAddSpline.AutoSize = true;
-            this.rbAddSpline.Enabled = false;
-            this.rbAddSpline.Location = new System.Drawing.Point(22, 400);
-            this.rbAddSpline.Name = "rbAddSpline";
-            this.rbAddSpline.Size = new System.Drawing.Size(110, 21);
-            this.rbAddSpline.TabIndex = 8;
-            this.rbAddSpline.TabStop = true;
-            this.rbAddSpline.Text = "radioButton1";
-            this.rbAddSpline.UseVisualStyleBackColor = true;
+            this.rbAddPrecipice.AutoSize = true;
+            this.rbAddPrecipice.Enabled = false;
+            this.rbAddPrecipice.Location = new System.Drawing.Point(22, 427);
+            this.rbAddPrecipice.Name = "rbAddPrecipice";
+            this.rbAddPrecipice.Size = new System.Drawing.Size(73, 21);
+            this.rbAddPrecipice.TabIndex = 9;
+            this.rbAddPrecipice.TabStop = true;
+            this.rbAddPrecipice.Text = "Обрыв";
+            this.rbAddPrecipice.UseVisualStyleBackColor = true;
+            // 
+            // rbAddWall
+            // 
+            this.rbAddWall.AutoSize = true;
+            this.rbAddWall.Enabled = false;
+            this.rbAddWall.Location = new System.Drawing.Point(22, 400);
+            this.rbAddWall.Name = "rbAddWall";
+            this.rbAddWall.Size = new System.Drawing.Size(69, 21);
+            this.rbAddWall.TabIndex = 8;
+            this.rbAddWall.TabStop = true;
+            this.rbAddWall.Text = "Стена";
+            this.rbAddWall.UseVisualStyleBackColor = true;
             // 
             // cbSpline
             // 
@@ -187,7 +199,7 @@
             this.anT.Dock = System.Windows.Forms.DockStyle.Fill;
             this.anT.Location = new System.Drawing.Point(0, 0);
             this.anT.Name = "anT";
-            this.anT.Size = new System.Drawing.Size(925, 629);
+            this.anT.Size = new System.Drawing.Size(893, 629);
             this.anT.StencilBits = ((byte)(0));
             this.anT.TabIndex = 10;
             this.anT.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.anT_KeyPress);
@@ -197,23 +209,11 @@
             this.anT.MouseUp += new System.Windows.Forms.MouseEventHandler(this.anT_MouseUp);
             this.anT.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.anT_MouseWheel);
             // 
-            // listBox1
-            // 
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.ItemHeight = 16;
-            this.listBox1.Location = new System.Drawing.Point(6, 454);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(182, 164);
-            this.listBox1.TabIndex = 10;
-            this.listBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listBox1_KeyDown);
-            this.listBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.listBox1_KeyPress);
-            this.listBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.listBox1_MouseMove);
-            // 
             // Graph
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1125, 629);
+            this.ClientSize = new System.Drawing.Size(1246, 629);
             this.Controls.Add(this.anT);
             this.Controls.Add(this.panel1);
             this.Margin = new System.Windows.Forms.Padding(4);
@@ -240,8 +240,8 @@
         private System.Windows.Forms.TextBox tbAddPqName;
         private System.Windows.Forms.Button btListFilt;
         private System.Windows.Forms.CheckBox cbSpline;
-        private System.Windows.Forms.RadioButton rbEditSpline;
-        private System.Windows.Forms.RadioButton rbAddSpline;
+        private System.Windows.Forms.RadioButton rbAddPrecipice;
+        private System.Windows.Forms.RadioButton rbAddWall;
         private System.Windows.Forms.ListBox listBox1;
     }
 }

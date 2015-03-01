@@ -77,6 +77,20 @@ namespace ETopo
             };
         }
 
+        private static Point GetDerSplinePoint(SplinePoint spline0, SplinePoint spline1, double t)
+        {
+            return new Point
+            {
+                X = (float)
+                    (spline0.Point.X*(6*t*t - 6*t) + spline0.Rb.X*(3*t*t - 4*t + 1) +
+                     spline1.Point.X*(-6*t*t + 6*t) + spline1.Ra.X*(3*t*t - 2*t)),
+                Y =
+                    (float)
+                        (spline0.Point.Y*(6*t*t - 6*t) + spline0.Rb.Y*(3*t*t - 4*t + 1) +
+                         spline1.Point.Y*(-6*t*t + 6*t) + spline1.Ra.Y*(3*t*t - 2*t))
+            };
+        }
+
         private static Point Rotate(double x, double y, double alpha)
         {
             return new Point
@@ -85,83 +99,73 @@ namespace ETopo
                 Y = (float)(x*Math.Sin(alpha) + y*Math.Cos(alpha))
             };
         }
-       
-        private void DrawMap()
+
+        private void DrowTrapez()
         {
-            Gl.glClear(Gl.GL_COLOR_BUFFER_BIT | Gl.GL_DEPTH_BUFFER_BIT);
-
-            Gl.glLoadIdentity();
-            Gl.glColor3f(0.5f, 1f, 1f);
-            var max = 0.0;
-            foreach (var piquet in PqList)
-            {
-                max = Math.Max(max, piquet.X);
-                max = Math.Max(max, piquet.Y);
-            }
-
-            if (cbTrapez.Checked)
-            {
-                foreach (
+            foreach (
                     var trace in
                         TrcList.Where(t => !_listOnly || lbPiq.Items.Contains(t.From) && lbPiq.Items.Contains(t.To)))
+            {
+                var x0 = 0.0;
+                var y0 = 0.0;
+                var x1 = 0.0;
+                var y1 = 0.0;
+                var trace1 = trace;
+                foreach (var piquet in PqList.Where(piquet => piquet.Name == trace1.From))
                 {
-                    var x0 = 0.0;
-                    var y0 = 0.0;
-                    var x1 = 0.0;
-                    var y1 = 0.0;
-                    var trace1 = trace;
-                    foreach (var piquet in PqList.Where(piquet => piquet.Name == trace1.From))
-                    {
-                        x0 = piquet.X;
-                        y0 = piquet.Y;
-                    }
-                    var trace2 = trace;
-                    foreach (var piquet in PqList.Where(piquet => piquet.Name == trace2.To))
-                    {
-                        x1 = piquet.X;
-                        y1 = piquet.Y;
-                    }
-                    var alpha = Math.Abs(x1 - x0) < 0.000001 ? Math.PI/2*(y1 > y0 ? 1 : -1) : Math.Atan((y1 - y0)/(x1 - x0));
-                    var point0 = new Point();
-                    var point1 = new Point();
-                    var point2 = new Point
-                    {
-                        X = (float) (x1 + Rotate(trace.Left, 0, alpha + Math.PI/2).X),
-                        Y = (float) (y1 + Rotate(trace.Left, 0, alpha + Math.PI/2).Y)
-                    };
-                    var point3 = new Point
-                    {
-                        X = (float) (x1 - Rotate(trace.Right, 0, alpha + Math.PI/2).X),
-                        Y = (float) (y1 - Rotate(trace.Right, 0, alpha + Math.PI/2).Y)
-                    };
-                    if (Math.Abs(trace.FromDown + trace.FromUp + trace.FromLeft + trace.FromRight) < 0.01)
-                    {
-                        var trace3 = trace;
-                        foreach (var trc in TrcList.Where(trc => trc.To == trace3.From))
-                        {
-                            point0.X = (float) (x0 + Rotate(trc.Left, 0, alpha + Math.PI/2).X);
-                            point0.Y = (float) (y0 + Rotate(trc.Left, 0, alpha + Math.PI/2).Y);
-                            point1.X = (float) (x0 - Rotate(trc.Right, 0, alpha + Math.PI/2).X);
-                            point1.Y = (float) (y0 - Rotate(trc.Right, 0, alpha + Math.PI/2).Y);
-                        }
-                    }
-                    else
-                    {
-                        point0.X = (float) (x0 + Rotate(trace.FromLeft, 0, alpha + Math.PI/2).X);
-                        point0.Y = (float) (y0 + Rotate(trace.FromLeft, 0, alpha + Math.PI/2).Y);
-                        point1.X = (float) (x0 - Rotate(trace.FromRight, 0, alpha + Math.PI/2).X);
-                        point1.Y = (float) (y0 - Rotate(trace.FromRight, 0, alpha + Math.PI/2).Y);
-                    }
-                    Gl.glLineWidth(1);
-                    Gl.glColor3f(0.5f, 1f, 1f);
-                    Gl.glBegin(Gl.GL_QUADS);
-                    Gl.glVertex2d(point0.X*_scale + _moveX, point0.Y*_scale + _moveY);
-                    Gl.glVertex2d(point1.X*_scale + _moveX, point1.Y*_scale + _moveY);
-                    Gl.glVertex2d(point3.X*_scale + _moveX, point3.Y*_scale + _moveY);
-                    Gl.glVertex2d(point2.X*_scale + _moveX, point2.Y*_scale + _moveY);
-                    Gl.glEnd();
+                    x0 = piquet.X;
+                    y0 = piquet.Y;
                 }
+                var trace2 = trace;
+                foreach (var piquet in PqList.Where(piquet => piquet.Name == trace2.To))
+                {
+                    x1 = piquet.X;
+                    y1 = piquet.Y;
+                }
+                var alpha = Math.Abs(x1 - x0) < 0.000001 ? Math.PI / 2 * (y1 > y0 ? 1 : -1) : Math.Atan((y1 - y0) / (x1 - x0));
+                var point0 = new Point();
+                var point1 = new Point();
+                var point2 = new Point
+                {
+                    X = (float)(x1 + Rotate(trace.Left, 0, alpha + Math.PI / 2).X),
+                    Y = (float)(y1 + Rotate(trace.Left, 0, alpha + Math.PI / 2).Y)
+                };
+                var point3 = new Point
+                {
+                    X = (float)(x1 - Rotate(trace.Right, 0, alpha + Math.PI / 2).X),
+                    Y = (float)(y1 - Rotate(trace.Right, 0, alpha + Math.PI / 2).Y)
+                };
+                if (Math.Abs(trace.FromDown + trace.FromUp + trace.FromLeft + trace.FromRight) < 0.01)
+                {
+                    var trace3 = trace;
+                    foreach (var trc in TrcList.Where(trc => trc.To == trace3.From))
+                    {
+                        point0.X = (float)(x0 + Rotate(trc.Left, 0, alpha + Math.PI / 2).X);
+                        point0.Y = (float)(y0 + Rotate(trc.Left, 0, alpha + Math.PI / 2).Y);
+                        point1.X = (float)(x0 - Rotate(trc.Right, 0, alpha + Math.PI / 2).X);
+                        point1.Y = (float)(y0 - Rotate(trc.Right, 0, alpha + Math.PI / 2).Y);
+                    }
+                }
+                else
+                {
+                    point0.X = (float)(x0 + Rotate(trace.FromLeft, 0, alpha + Math.PI / 2).X);
+                    point0.Y = (float)(y0 + Rotate(trace.FromLeft, 0, alpha + Math.PI / 2).Y);
+                    point1.X = (float)(x0 - Rotate(trace.FromRight, 0, alpha + Math.PI / 2).X);
+                    point1.Y = (float)(y0 - Rotate(trace.FromRight, 0, alpha + Math.PI / 2).Y);
+                }
+                Gl.glLineWidth(1);
+                Gl.glColor3f(0.5f, 1f, 1f);
+                Gl.glBegin(Gl.GL_QUADS);
+                Gl.glVertex2d(point0.X * _scale + _moveX, point0.Y * _scale + _moveY);
+                Gl.glVertex2d(point1.X * _scale + _moveX, point1.Y * _scale + _moveY);
+                Gl.glVertex2d(point3.X * _scale + _moveX, point3.Y * _scale + _moveY);
+                Gl.glVertex2d(point2.X * _scale + _moveX, point2.Y * _scale + _moveY);
+                Gl.glEnd();
             }
+        }
+
+        private void DrowTraces()
+        {
             foreach (var trace in TrcList.Where(t => !_listOnly || lbPiq.Items.Contains(t.From) && lbPiq.Items.Contains(t.To)))
             {
                 var x0 = 0.0;
@@ -187,7 +191,10 @@ namespace ETopo
                 Gl.glVertex2d(x1 * _scale + _moveX, y1 * _scale + _moveY);
                 Gl.glEnd();
             }
+        }
 
+        private void DrowPiquets()
+        {
             foreach (var piquet in PqList.Where(p => !_listOnly || lbPiq.Items.Contains(p.Name)))
             {
                 Gl.glPointSize(10);
@@ -195,21 +202,23 @@ namespace ETopo
                     Gl.glColor3f(0.5f, 0.5f, 0.5f);
                 else
                     Gl.glColor3f(0.0f, 1.0f, 0.0f);
-                    
+
                 Gl.glBegin(Gl.GL_POINTS);
-                Gl.glVertex2d((float) (piquet.X*_scale + _moveX), (float) (piquet.Y*_scale + _moveY));
+                Gl.glVertex2d((float)(piquet.X * _scale + _moveX), (float)(piquet.Y * _scale + _moveY));
                 Gl.glEnd();
                 Gl.glPointSize(1);
                 Gl.glColor3f(0.0f, 0.0f, 0.0f);
-                PrintText2D((float)(piquet.X*_scale+_moveX), (float)(piquet.Y*_scale+_moveY), piquet.Name);
+                PrintText2D((float)(piquet.X * _scale + _moveX), (float)(piquet.Y * _scale + _moveY), piquet.Name);
             }
+        }
 
-            
-            foreach (var spline in _spline)
+        private void DrowWalls()
+        {
+            foreach (var spline in _spline.Where(s=>s.Type==SplineType.Wall))
             {
                 if (ReferenceEquals(spline.Name, listBox1.SelectedItem))
                 {
-                    Gl.glColor3f(1.0f, 0.5f, 0.5f); 
+                    Gl.glColor3f(1.0f, 0.5f, 0.5f);
                 }
                 else
                 {
@@ -222,55 +231,21 @@ namespace ETopo
                     while (t < 1)
                     {
                         var point = GetSplinePoint(spline.PointList[i], spline.PointList[i + 1], t);
-                        Gl.glVertex2d(point.X*_scale + _moveX, point.Y*_scale + _moveY);
+                        Gl.glVertex2d(point.X * _scale + _moveX, point.Y * _scale + _moveY);
                         t += 0.1;
                     }
                 }
                 Gl.glEnd();
             }
-            
-            
             Gl.glPointSize(5);
             Gl.glBegin(Gl.GL_POINTS);
-            foreach (var spline in _spline)
+            foreach (var spline in _spline.Where(s=>s.Type==SplineType.Wall))
             {
                 foreach (var point in spline.PointList)
                 {
                     Gl.glColor3f(0.5f, 0.5f, 0.5f);
-                    Gl.glVertex2d((float) (point.Point.X*_scale + _moveX), (float) (point.Point.Y*_scale + _moveY));
-                    Gl.glColor3f(0.0f, 0.0f, 1.0f);
-                    Gl.glVertex2d(
-                        (float) ((point.Point.X + point.Ra.X/3)*_scale + _moveX),
-                        (float) ((point.Point.Y + point.Ra.Y/3)*_scale + _moveY));
-                    Gl.glVertex2d(
-                        (float) ((point.Point.X - point.Rb.X/3)*_scale + _moveX),
-                        (float) ((point.Point.Y - point.Rb.Y/3)*_scale + _moveY));
-                }
-            }
-            Gl.glEnd();
-
-            Gl.glColor3f(0.8f, 1.0f, 0.0f);
-            Gl.glBegin(Gl.GL_LINES);
-                for (var i = 0; i < _curSpline.Count - 1; i++)
-                {
-                    double t = 0;
-                    while (t < 1)
-                    {
-                        var point = GetSplinePoint(_curSpline[i], _curSpline[i + 1], t);
-                        Gl.glVertex2d(point.X * _scale + _moveX, point.Y * _scale + _moveY);
-                        t += 0.1;
-                    }
-                }
-            
-            Gl.glEnd();
-
-            Gl.glPointSize(5);
-            Gl.glBegin(Gl.GL_POINTS);
-                foreach (var point in _curSpline)
-                {
-                    Gl.glColor3f(0.6f, 0.6f, 0.0f);
                     Gl.glVertex2d((float)(point.Point.X * _scale + _moveX), (float)(point.Point.Y * _scale + _moveY));
-                    Gl.glColor3f(0.3f, 0.3f, 0.0f);
+                    Gl.glColor3f(0.0f, 0.0f, 1.0f);
                     Gl.glVertex2d(
                         (float)((point.Point.X + point.Ra.X / 3) * _scale + _moveX),
                         (float)((point.Point.Y + point.Ra.Y / 3) * _scale + _moveY));
@@ -278,8 +253,170 @@ namespace ETopo
                         (float)((point.Point.X - point.Rb.X / 3) * _scale + _moveX),
                         (float)((point.Point.Y - point.Rb.Y / 3) * _scale + _moveY));
                 }
-            
+            }
             Gl.glEnd();
+
+            Gl.glColor3f(0.8f, 1.0f, 0.0f);
+            Gl.glBegin(Gl.GL_LINES);
+            for (var i = 0; i < _curSpline.Count - 1; i++)
+            {
+                double t = 0;
+                while (t < 1)
+                {
+                    var point = GetSplinePoint(_curSpline[i], _curSpline[i + 1], t);
+                    Gl.glVertex2d(point.X * _scale + _moveX, point.Y * _scale + _moveY);
+                    t += 0.1;
+                }
+            }
+            Gl.glEnd();
+
+            Gl.glPointSize(5);
+            Gl.glBegin(Gl.GL_POINTS);
+            foreach (var point in _curSpline)
+            {
+                Gl.glColor3f(0.6f, 0.6f, 0.0f);
+                Gl.glVertex2d((float)(point.Point.X * _scale + _moveX), (float)(point.Point.Y * _scale + _moveY));
+                Gl.glColor3f(0.3f, 0.3f, 0.0f);
+                Gl.glVertex2d(
+                    (float)((point.Point.X + point.Ra.X / 3) * _scale + _moveX),
+                    (float)((point.Point.Y + point.Ra.Y / 3) * _scale + _moveY));
+                Gl.glVertex2d(
+                    (float)((point.Point.X - point.Rb.X / 3) * _scale + _moveX),
+                    (float)((point.Point.Y - point.Rb.Y / 3) * _scale + _moveY));
+            }
+
+            Gl.glEnd();
+        }
+
+        private void DrowPrecipice()
+        {
+            foreach (var spline in _spline.Where(s => s.Type == SplineType.Precipice))
+            {
+                if (ReferenceEquals(spline.Name, listBox1.SelectedItem))
+                {
+                    Gl.glColor3f(1.0f, 0.5f, 0.5f);
+                }
+                else
+                {
+                    Gl.glColor3f(0.5f, 0.5f, 0.5f);
+                }
+                Gl.glBegin(Gl.GL_LINE_STRIP);
+                for (var i = 0; i < spline.PointList.Count - 1; i++)
+                {
+                    double t = 0;
+                    while (t < 1)
+                    {
+                        var point = GetSplinePoint(spline.PointList[i], spline.PointList[i + 1], t);
+                        Gl.glVertex2d(point.X * _scale + _moveX, point.Y * _scale + _moveY);
+                        t += 0.1;
+                    }
+                }
+                Gl.glEnd();
+            }
+
+            Gl.glColor3f(0.5f, 0.5f, 0.5f);
+            foreach (var spline in _spline.Where(s => s.Type == SplineType.Precipice))
+            {
+
+
+                for (var i = 0; i < spline.PointList.Count - 1; i++)
+                {
+                    double t = 0;
+                    var p1 = spline.PointList[i].Point;
+                    var p2 = spline.PointList[i + 1].Point;
+                    var len = Math.Sqrt((p1.X - p2.X)*(p1.X - p2.X) + (p1.Y - p2.Y)*(p1.Y - p2.Y))*2;
+                    while (t < 1)
+                    {
+                        var point = GetSplinePoint(spline.PointList[i], spline.PointList[i + 1], t);
+                        var derPoint = GetDerSplinePoint(spline.PointList[i], spline.PointList[i + 1], t);
+
+                        var p = new Point
+                        {
+                            X = derPoint.X/(float) Math.Sqrt(derPoint.X*derPoint.X + derPoint.Y*derPoint.Y),
+                            Y = derPoint.Y/(float) Math.Sqrt(derPoint.X*derPoint.X + derPoint.Y*derPoint.Y)
+                        };
+                        p = Rotate(p.X, p.Y, 90);
+                        Gl.glBegin(Gl.GL_LINE_STRIP);
+                        Gl.glVertex2d(point.X*_scale + _moveX, point.Y*_scale + _moveY);
+                        Gl.glVertex2d((point.X + p.X/5)*_scale + _moveX, (point.Y + p.Y/5)*_scale + _moveY);
+                        Gl.glEnd();
+                        t += 1/len;
+                    }
+                }
+            }
+            
+            Gl.glPointSize(5);
+            Gl.glBegin(Gl.GL_POINTS);
+            foreach (var spline in _spline.Where(s => s.Type == SplineType.Precipice))
+            {
+                foreach (var point in spline.PointList)
+                {
+                    Gl.glColor3f(0.5f, 0.5f, 0.5f);
+                    Gl.glVertex2d((float)(point.Point.X * _scale + _moveX), (float)(point.Point.Y * _scale + _moveY));
+                    Gl.glColor3f(0.0f, 0.0f, 1.0f);
+                    Gl.glVertex2d(
+                        (float)((point.Point.X + point.Ra.X / 3) * _scale + _moveX),
+                        (float)((point.Point.Y + point.Ra.Y / 3) * _scale + _moveY));
+                    Gl.glVertex2d(
+                        (float)((point.Point.X - point.Rb.X / 3) * _scale + _moveX),
+                        (float)((point.Point.Y - point.Rb.Y / 3) * _scale + _moveY));
+                }
+            }
+            Gl.glEnd();
+
+            Gl.glColor3f(0.8f, 1.0f, 0.0f);
+            Gl.glBegin(Gl.GL_LINES);
+            for (var i = 0; i < _curSpline.Count - 1; i++)
+            {
+                double t = 0;
+                while (t < 1)
+                {
+                    var point = GetSplinePoint(_curSpline[i], _curSpline[i + 1], t);
+                    Gl.glVertex2d(point.X * _scale + _moveX, point.Y * _scale + _moveY);
+                    t += 0.1;
+                }
+            }
+            Gl.glEnd();
+
+            Gl.glPointSize(5);
+            Gl.glBegin(Gl.GL_POINTS);
+            foreach (var point in _curSpline)
+            {
+                Gl.glColor3f(0.6f, 0.6f, 0.0f);
+                Gl.glVertex2d((float)(point.Point.X * _scale + _moveX), (float)(point.Point.Y * _scale + _moveY));
+                Gl.glColor3f(0.3f, 0.3f, 0.0f);
+                Gl.glVertex2d(
+                    (float)((point.Point.X + point.Ra.X / 3) * _scale + _moveX),
+                    (float)((point.Point.Y + point.Ra.Y / 3) * _scale + _moveY));
+                Gl.glVertex2d(
+                    (float)((point.Point.X - point.Rb.X / 3) * _scale + _moveX),
+                    (float)((point.Point.Y - point.Rb.Y / 3) * _scale + _moveY));
+            }
+
+            Gl.glEnd();
+        }
+
+        private void DrawMap()
+        {
+            Gl.glClear(Gl.GL_COLOR_BUFFER_BIT | Gl.GL_DEPTH_BUFFER_BIT);
+
+            Gl.glLoadIdentity();
+            Gl.glColor3f(0.5f, 1f, 1f);
+            var max = 0.0;
+            foreach (var piquet in PqList)
+            {
+                max = Math.Max(max, piquet.X);
+                max = Math.Max(max, piquet.Y);
+            }
+
+            if (cbTrapez.Checked)
+            {
+                DrowTrapez();
+            }
+            DrowTraces();
+            DrowPiquets();
+            DrowWalls();
+            DrowPrecipice();
             
             Gl.glFlush();
             anT.Invalidate();
@@ -330,9 +467,14 @@ namespace ETopo
             }
             else
             {
-                if (rbAddSpline.Checked)
+                if (rbAddWall.Checked && _editPoint == null)
                 {
                     var s = new SplinePoint((float) lineX, (float) lineY, _curSpline);
+                    _curSpline.Add(s);
+                }
+                if (rbAddPrecipice.Checked && _editPoint == null)
+                {
+                    var s = new SplinePoint((float)lineX, (float)lineY, _curSpline);
                     _curSpline.Add(s);
                 }
             }
@@ -419,7 +561,7 @@ namespace ETopo
                 _dX = e.X;
                 _dY = e.Y; 
             }
-            if (rbEditSpline.Checked&&_editPoint!=null)
+            if (_editPoint!=null)
             {
                 var lineX = (e.X*_devX - _moveX)/_scale;
                 var lineY = ((anT.Height - e.Y)*_devY - _moveY)/_scale;
@@ -462,6 +604,54 @@ namespace ETopo
             }
             if (e.Delta == 0) return;
             _scale-=0.1;
+        }
+
+        private void anT_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if ((e.KeyChar != (char) Keys.Enter && e.KeyChar != (char) Keys.Escape) || !cbSpline.Checked) return;
+            if (e.KeyChar == (char) Keys.Enter)
+            {
+                if (rbAddWall.Checked)
+                {
+                    var numbs = new List<int>();
+                    foreach (var item in listBox1.Items)
+                    {
+                        if (item.ToString().Contains("Стена"))
+                        {
+                            numbs.Add(Convert.ToInt32(item.ToString().Replace("Стена", "")));
+                        }
+                    }
+                    var numb = numbs.Any() ? (numbs.Max() + 1) : 1;
+                    var spline = new Spline(SplineType.Wall, _curSpline) {Name = "Стена" + numb};
+                    _spline.Add(spline);
+                }
+                if (rbAddPrecipice.Checked)
+                {
+                    var numbs = new List<int>();
+                    foreach (var item in listBox1.Items)
+                    {
+                        if (item.ToString().Contains("Обрыв"))
+                        {
+                            numbs.Add(Convert.ToInt32(item.ToString().Replace("Обрыв", "")));
+                        }
+                    }
+                    var numb = numbs.Any() ? (numbs.Max() + 1) : 1;
+                    var spline = new Spline(SplineType.Precipice, _curSpline) {Name = "Обрыв" + numb};
+                    _spline.Add(spline);
+                }
+
+
+                listBox1.Items.Clear();
+                foreach (var spline1 in _spline.Where(s => s.Type == SplineType.Wall))
+                {
+                    listBox1.Items.Add(spline1.Name);
+                }
+                foreach (var spline1 in _spline.Where(s => s.Type == SplineType.Precipice))
+                {
+                    listBox1.Items.Add(spline1.Name);
+                }
+            }
+            _curSpline = new List<SplinePoint>();
         }
 
         private void Graph_Resize(object sender, EventArgs e)
@@ -530,10 +720,10 @@ namespace ETopo
             {
                 cbTrapez.Checked = true;
             }
-            rbAddSpline.Enabled = cbSpline.Checked;
-            rbEditSpline.Enabled = cbSpline.Checked;
-            rbAddSpline.Checked = cbSpline.Checked;
-            rbEditSpline.Checked = false;
+            rbAddWall.Enabled = cbSpline.Checked;
+            rbAddPrecipice.Enabled = cbSpline.Checked;
+            rbAddWall.Checked = cbSpline.Checked;
+            rbAddPrecipice.Checked = false;
         }
 
         private void cbTrapez_CheckedChanged(object sender, EventArgs e)
@@ -542,18 +732,7 @@ namespace ETopo
                 cbSpline.Checked = false;
         }
 
-        private void anT_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (e.KeyChar != (char)Keys.Enter || !cbSpline.Checked) return;
-            var spline = new Spline(_curSpline) {Name = "Стена" + _spline.Count};
-            _spline.Add(spline);
-            listBox1.Items.Clear();
-            foreach (var spline1 in _spline.Where(s=>s.Type==SplineType.Wall))
-            {
-                listBox1.Items.Add(spline1.Name);
-            }
-            _curSpline = new List<SplinePoint>();
-        }
+        
 
         private void listBox1_KeyPress(object sender, KeyPressEventArgs e)
         {
@@ -569,7 +748,7 @@ namespace ETopo
                 var name = listBox1.SelectedItem;
                 _spline.RemoveAll(s => ReferenceEquals(s.Name, name));
                 listBox1.Items.Clear();
-                foreach (var spline1 in _spline.Where(s => s.Type == SplineType.Wall))
+                foreach (var spline1 in _spline)
                 {
                     listBox1.Items.Add(spline1.Name);
                 }
