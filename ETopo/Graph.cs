@@ -448,39 +448,42 @@ namespace ETopo
             // приводим к нужному нам формату, в соотвествии с настройками проекции 
             var lineX = (e.X*_devX - _moveX)/_scale;
             var lineY = ((anT.Height - e.Y)*_devY - _moveY)/_scale;
-            if (!cbSpline.Checked)
-            {
-                foreach (
-                    var piquet in
-                        PqList.Where(piquet => Math.Abs(piquet.X - lineX) < 0.5 && Math.Abs(piquet.Y - lineY) < 0.5)
-                            .Where(piquet => !_currPqList.Contains(piquet)))
-                {
-                    lbPiq.Items.Clear();
-                    _currPqList.Add(piquet);
-                    _currPqList.Sort(
-                        (item1, item2) => String.Compare(item1.Name, item2.Name, StringComparison.OrdinalIgnoreCase));
-                    foreach (var pq in _currPqList)
-                    {
-                        lbPiq.Items.Add(pq.Name);
-                    }
-                }
-            }
-            else
+            if (cbSpline.Checked)
             {
                 if (rbAddWall.Checked && _editPoint == null)
                 {
                     var s = new SplinePoint((float) lineX, (float) lineY, _curSpline);
                     _curSpline.Add(s);
-                }
-                if (rbAddPrecipice.Checked && _editPoint == null)
-                {
-                    var s = new SplinePoint((float)lineX, (float)lineY, _curSpline);
-                    _curSpline.Add(s);
+                    return;
                 }
             }
+            if (cbCGN.Checked)
+            {
+                if (rbAddPrecipice.Checked && _editPoint == null)
+                {
+                    var s = new SplinePoint((float) lineX, (float) lineY, _curSpline);
+                    _curSpline.Add(s);
+                    return;
+                }
+            }
+            foreach (
+                var piquet in
+                    PqList.Where(piquet => Math.Abs(piquet.X - lineX) < 0.5 && Math.Abs(piquet.Y - lineY) < 0.5)
+                        .Where(piquet => !_currPqList.Contains(piquet)))
+            {
+                lbPiq.Items.Clear();
+                _currPqList.Add(piquet);
+                _currPqList.Sort(
+                    (item1, item2) => String.Compare(item1.Name, item2.Name, StringComparison.OrdinalIgnoreCase));
+                foreach (var pq in _currPqList)
+                {
+                    lbPiq.Items.Add(pq.Name);
+                }
+            }
+
             if (_splineX != null && _splineY != null)
             {
-               // _spline.Add(new Spline { Bias = 0, Cont = 0, Ra = 0, Rb = 0, Tens = 0, X = e.X, Y = e.Y });
+                // _spline.Add(new Spline { Bias = 0, Cont = 0, Ra = 0, Rb = 0, Tens = 0, X = e.X, Y = e.Y });
             }
             _splineX = e.X;
             _splineY = e.Y;
@@ -608,7 +611,7 @@ namespace ETopo
 
         private void anT_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if ((e.KeyChar != (char) Keys.Enter && e.KeyChar != (char) Keys.Escape) || !cbSpline.Checked) return;
+            if ((e.KeyChar != (char) Keys.Enter && e.KeyChar != (char) Keys.Escape) || (!cbSpline.Checked&&!cbCGN.Checked)) return;
             if (e.KeyChar == (char) Keys.Enter)
             {
                 if (rbAddWall.Checked)
@@ -719,11 +722,14 @@ namespace ETopo
             if (cbSpline.Checked)
             {
                 cbTrapez.Checked = true;
+                cbCGN.Checked = false;
             }
             rbAddWall.Enabled = cbSpline.Checked;
-            rbAddPrecipice.Enabled = cbSpline.Checked;
+            rbAddWay.Enabled = cbSpline.Checked;
             rbAddWall.Checked = cbSpline.Checked;
-            rbAddPrecipice.Checked = false;
+            rbAddWay.Checked = false;
+            rbAddPrecipice.Enabled = cbCGN.Checked;
+            rbStone.Enabled = cbCGN.Checked;
         }
 
         private void cbTrapez_CheckedChanged(object sender, EventArgs e)
@@ -758,6 +764,20 @@ namespace ETopo
         private void listBox1_MouseMove(object sender, MouseEventArgs e)
         {
             Text = e.Delta.ToString();
+        }
+
+        private void cbCGN_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cbCGN.Checked)
+            {
+                cbSpline.Checked = false;
+            }
+            rbAddPrecipice.Enabled = cbCGN.Checked;
+            rbStone.Enabled = cbCGN.Checked;
+            rbAddPrecipice.Checked = cbCGN.Checked;
+            rbStone.Checked = false;
+            rbAddWall.Enabled = cbSpline.Checked;
+            rbAddWay.Enabled = cbSpline.Checked;
         }
 
     }

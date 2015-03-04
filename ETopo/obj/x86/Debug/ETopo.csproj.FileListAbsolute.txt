@@ -8,4 +8,3 @@ C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopo\obj\x86\Debug
 C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopo\obj\x86\Debug\ETopo.exe
 C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopo\obj\x86\Debug\ETopo.pdb
 C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopo\obj\x86\Debug\ETopo.FrMain.resources
-C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopo\obj\x86\Debug\ETopo.csprojResolveAssemblyReference.cache

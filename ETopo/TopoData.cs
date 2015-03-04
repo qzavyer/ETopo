@@ -22,7 +22,14 @@ namespace ETopo
         private void FrTopoData_Load(object sender, EventArgs e)
         {
             tbName.Text = name;
-            cbDate.Value = date.Length == 0 ? DateTime.Now : Convert.ToDateTime(date);
+            try
+            {
+                cbDate.Value = Convert.ToDateTime(date);
+            }
+            catch 
+            {
+                cbDate.Value = DateTime.Now;
+            }
             tbAutor.Lines = autor == null ? null : autor.ToArray();
         }
     }

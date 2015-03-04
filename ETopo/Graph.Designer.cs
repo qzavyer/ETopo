@@ -43,6 +43,9 @@
             this.cbTrapez = new System.Windows.Forms.CheckBox();
             this.lbPiq = new System.Windows.Forms.ListBox();
             this.anT = new Tao.Platform.Windows.SimpleOpenGlControl();
+            this.rbAddWay = new System.Windows.Forms.RadioButton();
+            this.cbCGN = new System.Windows.Forms.CheckBox();
+            this.rbStone = new System.Windows.Forms.RadioButton();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -53,6 +56,9 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.rbStone);
+            this.panel1.Controls.Add(this.cbCGN);
+            this.panel1.Controls.Add(this.rbAddWay);
             this.panel1.Controls.Add(this.listBox1);
             this.panel1.Controls.Add(this.rbAddPrecipice);
             this.panel1.Controls.Add(this.rbAddWall);
@@ -74,7 +80,7 @@
             // 
             this.listBox1.FormattingEnabled = true;
             this.listBox1.ItemHeight = 16;
-            this.listBox1.Location = new System.Drawing.Point(6, 454);
+            this.listBox1.Location = new System.Drawing.Point(171, 236);
             this.listBox1.Name = "listBox1";
             this.listBox1.Size = new System.Drawing.Size(182, 164);
             this.listBox1.TabIndex = 10;
@@ -86,10 +92,10 @@
             // 
             this.rbAddPrecipice.AutoSize = true;
             this.rbAddPrecipice.Enabled = false;
-            this.rbAddPrecipice.Location = new System.Drawing.Point(22, 427);
+            this.rbAddPrecipice.Location = new System.Drawing.Point(22, 482);
             this.rbAddPrecipice.Name = "rbAddPrecipice";
             this.rbAddPrecipice.Size = new System.Drawing.Size(73, 21);
-            this.rbAddPrecipice.TabIndex = 9;
+            this.rbAddPrecipice.TabIndex = 10;
             this.rbAddPrecipice.TabStop = true;
             this.rbAddPrecipice.Text = "Обрыв";
             this.rbAddPrecipice.UseVisualStyleBackColor = true;
@@ -111,9 +117,9 @@
             this.cbSpline.AutoSize = true;
             this.cbSpline.Location = new System.Drawing.Point(6, 373);
             this.cbSpline.Name = "cbSpline";
-            this.cbSpline.Size = new System.Drawing.Size(79, 21);
+            this.cbSpline.Size = new System.Drawing.Size(141, 21);
             this.cbSpline.TabIndex = 7;
-            this.cbSpline.Text = "Сплайн";
+            this.cbSpline.Text = "Элементы карты";
             this.cbSpline.UseVisualStyleBackColor = true;
             this.cbSpline.CheckedChanged += new System.EventHandler(this.cbSpline_CheckedChanged);
             // 
@@ -209,6 +215,41 @@
             this.anT.MouseUp += new System.Windows.Forms.MouseEventHandler(this.anT_MouseUp);
             this.anT.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.anT_MouseWheel);
             // 
+            // rbAddWay
+            // 
+            this.rbAddWay.AutoSize = true;
+            this.rbAddWay.Enabled = false;
+            this.rbAddWay.Location = new System.Drawing.Point(22, 428);
+            this.rbAddWay.Name = "rbAddWay";
+            this.rbAddWay.Size = new System.Drawing.Size(54, 21);
+            this.rbAddWay.TabIndex = 9;
+            this.rbAddWay.TabStop = true;
+            this.rbAddWay.Text = "Ход";
+            this.rbAddWay.UseVisualStyleBackColor = true;
+            // 
+            // cbCGN
+            // 
+            this.cbCGN.AutoSize = true;
+            this.cbCGN.Location = new System.Drawing.Point(6, 455);
+            this.cbCGN.Name = "cbCGN";
+            this.cbCGN.Size = new System.Drawing.Size(58, 21);
+            this.cbCGN.TabIndex = 11;
+            this.cbCGN.Text = "УГО";
+            this.cbCGN.UseVisualStyleBackColor = true;
+            this.cbCGN.CheckedChanged += new System.EventHandler(this.cbCGN_CheckedChanged);
+            // 
+            // rbStone
+            // 
+            this.rbStone.AutoSize = true;
+            this.rbStone.Enabled = false;
+            this.rbStone.Location = new System.Drawing.Point(22, 509);
+            this.rbStone.Name = "rbStone";
+            this.rbStone.Size = new System.Drawing.Size(71, 21);
+            this.rbStone.TabIndex = 12;
+            this.rbStone.TabStop = true;
+            this.rbStone.Text = "Камни";
+            this.rbStone.UseVisualStyleBackColor = true;
+            // 
             // Graph
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -243,5 +284,8 @@
         private System.Windows.Forms.RadioButton rbAddPrecipice;
         private System.Windows.Forms.RadioButton rbAddWall;
         private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.RadioButton rbStone;
+        private System.Windows.Forms.CheckBox cbCGN;
+        private System.Windows.Forms.RadioButton rbAddWay;
     }
 }
