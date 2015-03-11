@@ -31,6 +31,9 @@
             this.components = new System.ComponentModel.Container();
             this.tVis = new System.Windows.Forms.Timer(this.components);
             this.panel1 = new System.Windows.Forms.Panel();
+            this.rbStone = new System.Windows.Forms.RadioButton();
+            this.cbCGN = new System.Windows.Forms.CheckBox();
+            this.rbAddWay = new System.Windows.Forms.RadioButton();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.rbAddPrecipice = new System.Windows.Forms.RadioButton();
             this.rbAddWall = new System.Windows.Forms.RadioButton();
@@ -43,9 +46,6 @@
             this.cbTrapez = new System.Windows.Forms.CheckBox();
             this.lbPiq = new System.Windows.Forms.ListBox();
             this.anT = new Tao.Platform.Windows.SimpleOpenGlControl();
-            this.rbAddWay = new System.Windows.Forms.RadioButton();
-            this.cbCGN = new System.Windows.Forms.CheckBox();
-            this.rbStone = new System.Windows.Forms.RadioButton();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -76,6 +76,41 @@
             this.panel1.Size = new System.Drawing.Size(353, 629);
             this.panel1.TabIndex = 8;
             // 
+            // rbStone
+            // 
+            this.rbStone.AutoSize = true;
+            this.rbStone.Enabled = false;
+            this.rbStone.Location = new System.Drawing.Point(22, 509);
+            this.rbStone.Name = "rbStone";
+            this.rbStone.Size = new System.Drawing.Size(71, 21);
+            this.rbStone.TabIndex = 12;
+            this.rbStone.TabStop = true;
+            this.rbStone.Text = "Камни";
+            this.rbStone.UseVisualStyleBackColor = true;
+            // 
+            // cbCGN
+            // 
+            this.cbCGN.AutoSize = true;
+            this.cbCGN.Location = new System.Drawing.Point(6, 455);
+            this.cbCGN.Name = "cbCGN";
+            this.cbCGN.Size = new System.Drawing.Size(58, 21);
+            this.cbCGN.TabIndex = 11;
+            this.cbCGN.Text = "УГО";
+            this.cbCGN.UseVisualStyleBackColor = true;
+            this.cbCGN.CheckedChanged += new System.EventHandler(this.cbCGN_CheckedChanged);
+            // 
+            // rbAddWay
+            // 
+            this.rbAddWay.AutoSize = true;
+            this.rbAddWay.Enabled = false;
+            this.rbAddWay.Location = new System.Drawing.Point(22, 428);
+            this.rbAddWay.Name = "rbAddWay";
+            this.rbAddWay.Size = new System.Drawing.Size(54, 21);
+            this.rbAddWay.TabIndex = 9;
+            this.rbAddWay.TabStop = true;
+            this.rbAddWay.Text = "Ход";
+            this.rbAddWay.UseVisualStyleBackColor = true;
+            // 
             // listBox1
             // 
             this.listBox1.FormattingEnabled = true;
@@ -86,7 +121,6 @@
             this.listBox1.TabIndex = 10;
             this.listBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listBox1_KeyDown);
             this.listBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.listBox1_KeyPress);
-            this.listBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.listBox1_MouseMove);
             // 
             // rbAddPrecipice
             // 
@@ -208,47 +242,13 @@
             this.anT.Size = new System.Drawing.Size(893, 629);
             this.anT.StencilBits = ((byte)(0));
             this.anT.TabIndex = 10;
+            this.anT.KeyDown += new System.Windows.Forms.KeyEventHandler(this.anT_KeyDown);
             this.anT.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.anT_KeyPress);
             this.anT.MouseClick += new System.Windows.Forms.MouseEventHandler(this.anT_MouseClick);
             this.anT.MouseDown += new System.Windows.Forms.MouseEventHandler(this.anT_MouseDown);
             this.anT.MouseMove += new System.Windows.Forms.MouseEventHandler(this.anT_MouseMove);
             this.anT.MouseUp += new System.Windows.Forms.MouseEventHandler(this.anT_MouseUp);
             this.anT.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.anT_MouseWheel);
-            // 
-            // rbAddWay
-            // 
-            this.rbAddWay.AutoSize = true;
-            this.rbAddWay.Enabled = false;
-            this.rbAddWay.Location = new System.Drawing.Point(22, 428);
-            this.rbAddWay.Name = "rbAddWay";
-            this.rbAddWay.Size = new System.Drawing.Size(54, 21);
-            this.rbAddWay.TabIndex = 9;
-            this.rbAddWay.TabStop = true;
-            this.rbAddWay.Text = "Ход";
-            this.rbAddWay.UseVisualStyleBackColor = true;
-            // 
-            // cbCGN
-            // 
-            this.cbCGN.AutoSize = true;
-            this.cbCGN.Location = new System.Drawing.Point(6, 455);
-            this.cbCGN.Name = "cbCGN";
-            this.cbCGN.Size = new System.Drawing.Size(58, 21);
-            this.cbCGN.TabIndex = 11;
-            this.cbCGN.Text = "УГО";
-            this.cbCGN.UseVisualStyleBackColor = true;
-            this.cbCGN.CheckedChanged += new System.EventHandler(this.cbCGN_CheckedChanged);
-            // 
-            // rbStone
-            // 
-            this.rbStone.AutoSize = true;
-            this.rbStone.Enabled = false;
-            this.rbStone.Location = new System.Drawing.Point(22, 509);
-            this.rbStone.Name = "rbStone";
-            this.rbStone.Size = new System.Drawing.Size(71, 21);
-            this.rbStone.TabIndex = 12;
-            this.rbStone.TabStop = true;
-            this.rbStone.Text = "Камни";
-            this.rbStone.UseVisualStyleBackColor = true;
             // 
             // Graph
             // 

@@ -423,7 +423,7 @@ namespace ETopo
             var fr = new Graph {PqList = _piquetLst, TrcList = _traceList};
             var d = Math.Max(_traceList.Max(t => t.Left), _traceList.Max(t => t.Right));
             fr.top = _piquetLst.Max(p => p.Y)+d;
-            fr.Buttom = _piquetLst.Min(p => p.Y)-d;
+            fr.bottom = _piquetLst.Min(p => p.Y)-d;
             fr.left = _piquetLst.Min(p=>p.X)-d;
             fr.right = _piquetLst.Max(p=>p.X)+d;
             fr.ShowDialog();
