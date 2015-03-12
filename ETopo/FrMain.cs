@@ -437,5 +437,10 @@ namespace ETopo
             _date = fr.date;
             _autor = fr.autor;
         }
+
+        private void ExitMenu_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
     }
 }

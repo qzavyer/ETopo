@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrMain));
             this.dgTopo = new System.Windows.Forms.DataGridView();
             this.ClFrom = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ClTo = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -43,15 +44,17 @@
             this.файлToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.новыйToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.OpenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.сохранитьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.SaveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
-            this.выходToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ExitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.картаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.съёмкаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mData = new System.Windows.Forms.ToolStripMenuItem();
             this.odLoad = new System.Windows.Forms.OpenFileDialog();
             this.sdSave = new System.Windows.Forms.SaveFileDialog();
+            this.ExportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             ((System.ComponentModel.ISupportInitialize)(this.dgTopo)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -164,9 +167,11 @@
             this.файлToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.новыйToolStripMenuItem,
             this.OpenToolStripMenuItem,
-            this.сохранитьToolStripMenuItem,
+            this.SaveToolStripMenuItem,
+            this.toolStripMenuItem2,
+            this.ExportToolStripMenuItem,
             this.toolStripMenuItem1,
-            this.выходToolStripMenuItem});
+            this.ExitToolStripMenuItem});
             this.файлToolStripMenuItem.Name = "файлToolStripMenuItem";
             this.файлToolStripMenuItem.Size = new System.Drawing.Size(54, 22);
             this.файлToolStripMenuItem.Text = "Файл";
@@ -185,25 +190,26 @@
             this.OpenToolStripMenuItem.Text = "Загрузить";
             this.OpenToolStripMenuItem.Click += new System.EventHandler(this.LoadMenu_Click);
             // 
-            // сохранитьToolStripMenuItem
+            // SaveToolStripMenuItem
             // 
-            this.сохранитьToolStripMenuItem.Name = "сохранитьToolStripMenuItem";
-            this.сохранитьToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.сохранитьToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
-            this.сохранитьToolStripMenuItem.Text = "Сохранить";
-            this.сохранитьToolStripMenuItem.Click += new System.EventHandler(this.SaveMenu_Click);
+            this.SaveToolStripMenuItem.Name = "SaveToolStripMenuItem";
+            this.SaveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.SaveToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.SaveToolStripMenuItem.Text = "Сохранить";
+            this.SaveToolStripMenuItem.Click += new System.EventHandler(this.SaveMenu_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(194, 6);
             // 
-            // выходToolStripMenuItem
+            // ExitToolStripMenuItem
             // 
-            this.выходToolStripMenuItem.Name = "выходToolStripMenuItem";
-            this.выходToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.выходToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
-            this.выходToolStripMenuItem.Text = "Выход";
+            this.ExitToolStripMenuItem.Name = "ExitToolStripMenuItem";
+            this.ExitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
+            this.ExitToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.ExitToolStripMenuItem.Text = "Выход";
+            this.ExitToolStripMenuItem.Click += new System.EventHandler(this.ExitMenu_Click);
             // 
             // картаToolStripMenuItem
             // 
@@ -217,7 +223,7 @@
             // 
             this.dToolStripMenuItem.Name = "dToolStripMenuItem";
             this.dToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.G)));
-            this.dToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.dToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.dToolStripMenuItem.Text = "2D";
             this.dToolStripMenuItem.Click += new System.EventHandler(this.dToolStripMenuItem_Click);
             // 
@@ -247,12 +253,24 @@
             this.sdSave.DefaultExt = "cv";
             this.sdSave.Filter = "Файлы пещеры|*.cv";
             // 
+            // ExportToolStripMenuItem
+            // 
+            this.ExportToolStripMenuItem.Name = "ExportToolStripMenuItem";
+            this.ExportToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.ExportToolStripMenuItem.Text = "Экспорт";
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(194, 6);
+            // 
             // FrMain
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(824, 525);
             this.Controls.Add(this.dgTopo);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.MinimumSize = new System.Drawing.Size(617, 300);
             this.Name = "FrMain";
@@ -273,9 +291,9 @@
         private System.Windows.Forms.ToolStripMenuItem файлToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem новыйToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem OpenToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem сохранитьToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem SaveToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem выходToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ExitToolStripMenuItem;
         private System.Windows.Forms.OpenFileDialog odLoad;
         private System.Windows.Forms.ToolStripMenuItem картаToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem dToolStripMenuItem;
@@ -292,6 +310,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ClUp;
         private System.Windows.Forms.DataGridViewTextBoxColumn ClDown;
         private System.Windows.Forms.DataGridViewTextBoxColumn ClNote;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem ExportToolStripMenuItem;
     }
 }
 
