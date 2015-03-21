@@ -19,12 +19,13 @@ namespace ETopo
         public double right;
         public double bottom;
         public double top;
-        private double? _splineX;
-        private double? _splineY;
+        //private double? _splineX;
+        //private double? _splineY;
         private double _devX;
         private double _devY;
-        private bool _listOnly;
+        //private bool _listOnly;
         private EditPoint _editPoint;
+        private EditCgnPoint _editCgnPoint;
 
         private List<Spline> _spline;
         private List<SplinePoint> _curSpline;
@@ -102,11 +103,33 @@ namespace ETopo
             };
         }
 
+        private void AddCgn(CgnType type, string prefix,float x,float y)
+        {
+            var numbs = new List<int>();
+            foreach (var item in listBox1.Items)
+            {
+                if (item.ToString().Contains(prefix))
+                {
+                    numbs.Add(Convert.ToInt32(item.ToString().Replace(prefix, "")));
+                }
+            }
+            var numb = numbs.Any() ? (numbs.Max() + 1) : 1;
+            var cgn = new Cgn
+            {
+                Point = new Point { X = x, Y = y },
+                Type = type,
+                Name = prefix + numb
+            };
+            _cgnList.Add(cgn);
+            ReloadNames();
+            return;
+        }
+
         private void DrowTrapez()
         {
             foreach (
                     var trace in
-                        TrcList.Where(t => !_listOnly || lbPiq.Items.Contains(t.From) && lbPiq.Items.Contains(t.To)))
+                        TrcList)
             {
                 var x0 = 0.0;
                 var y0 = 0.0;
@@ -168,7 +191,7 @@ namespace ETopo
 
         private void DrowTraces()
         {
-            foreach (var trace in TrcList.Where(t => !_listOnly || lbPiq.Items.Contains(t.From) && lbPiq.Items.Contains(t.To)))
+            foreach (var trace in TrcList)
             {
                 var x0 = 0.0;
                 var y0 = 0.0;
@@ -197,9 +220,9 @@ namespace ETopo
 
         private void DrowPiquets()
         {
-            foreach (var piquet in PqList.Where(p => !_listOnly || lbPiq.Items.Contains(p.Name)))
+            foreach (var piquet in PqList)
             {
-                Gl.glPointSize(10);
+                Gl.glPointSize(5);
                 if (_currPqList.Contains(piquet))
                     Gl.glColor3f(0.5f, 0.5f, 0.5f);
                 else
@@ -210,7 +233,7 @@ namespace ETopo
                 Gl.glEnd();
                 Gl.glPointSize(1);
                 Gl.glColor3f(0.0f, 0.0f, 0.0f);
-                PrintText2D((float)(piquet.X * _scale + _moveX), (float)(piquet.Y * _scale + _moveY), piquet.Name);
+                PrintText2D((float)(piquet.X * _scale + _moveX), (float)(piquet.Y * _scale + _moveY), piquet.Name,12);
             }
         }
 
@@ -294,14 +317,7 @@ namespace ETopo
         {
             foreach (var spline in _spline.Where(s => s.Type == SplineType.Precipice))
             {
-                if (ReferenceEquals(spline.Name, listBox1.SelectedItem))
-                {
-                    Gl.glColor3f(1.0f, 0.5f, 0.5f);
-                }
-                else
-                {
-                    Gl.glColor3f(0.5f, 0.5f, 0.5f);
-                }
+                Gl.glColor3f(ReferenceEquals(spline.Name, listBox1.SelectedItem) ? 1.0f : 0.5f, 0.5f, 0.5f);
                 Gl.glBegin(Gl.GL_LINE_STRIP);
                 for (var i = 0; i < spline.PointList.Count - 1; i++)
                 {
@@ -409,15 +425,8 @@ namespace ETopo
 
             foreach (var stone in _cgnList.Where(c => c.Type == CgnType.Stone))
             {
-                if (ReferenceEquals(stone.Name, listBox1.SelectedItem))
-                {
-                    Gl.glColor3f(1.0f, 0.5f, 0.5f);
-                }
-                else
-                {
-                    Gl.glColor3f(0.5f, 0.5f, 0.5f);
-                }
-             
+                Gl.glColor3f(ReferenceEquals(stone.Name, listBox1.SelectedItem) ? 1.0f : 0.5f, 0.5f, 0.5f);
+
                 var x1 = stone.Point.X;
                 var y1 = stone.Point.Y + rad;
                 var x2 = x1 + Math.Cos(-60*MathConst.Rad)*len;
@@ -457,6 +466,187 @@ namespace ETopo
             }
         }
 
+        private void DrowWaters()
+        {
+            // малый радиус элипса
+            const float ry = 0.3f;
+            // большой радиус элипса
+            const float rx = 0.5f;
+
+            Gl.glPointSize(10);
+
+            foreach (var water in _cgnList.Where(c => c.Type == CgnType.Water))
+            {
+                if (ReferenceEquals(water.Name, listBox1.SelectedItem))
+                Gl.glColor3f( 1.0f, 0.5f, 0.5f);
+                else
+                    Gl.glColor3f(0.0f, 0.5f, 1.0f);
+                var x0 = water.Point.X;
+                var y0 = water.Point.Y;
+                Gl.glBegin(Gl.GL_POLYGON);
+                for (int i = 0; i < 360; i += 10)
+                {
+                    var x = x0 + rx*Math.Cos(i*MathConst.Rad);
+                    var y = y0 + ry*Math.Sin(i*MathConst.Rad);
+                    Gl.glVertex2d((x * _scale + _moveX), (y * _scale + _moveY));
+                }
+                Gl.glEnd();
+            }
+        }
+
+        private void DrowStalagmites()
+        {
+            // радиус описаной вокруг символа окружности
+            const float rad = 0.5f;
+            
+            Gl.glPointSize(10);
+
+            foreach (var stalagmite in _cgnList.Where(c => c.Type == CgnType.Stalagmite))
+            {
+                if (ReferenceEquals(stalagmite.Name, listBox1.SelectedItem))
+                    Gl.glColor3f(1.0f, 0.5f, 0.5f);
+                else
+                    Gl.glColor3f(0.2f, 0.2f, 0.2f);
+                var x1 = stalagmite.Point.X;
+                var y1 = stalagmite.Point.Y + rad;
+                var x2 = stalagmite.Point.X + Math.Cos(-30 * MathConst.Rad) * rad;
+                var y2 = stalagmite.Point.Y + Math.Sin(-30 * MathConst.Rad) * rad;
+                var x3 = stalagmite.Point.X + Math.Cos(-150 * MathConst.Rad) * rad;
+                var y3 = stalagmite.Point.Y + Math.Sin(-150 * MathConst.Rad) * rad;
+
+                Gl.glBegin(Gl.GL_TRIANGLES);
+                Gl.glVertex2d((float)(x1 * _scale + _moveX), (float)(y1 * _scale + _moveY));
+                Gl.glVertex2d((float)(x2 * _scale + _moveX), (float)(y2 * _scale + _moveY));
+                Gl.glVertex2d((float)(x3 * _scale + _moveX), (float)(y3 * _scale + _moveY));
+                Gl.glEnd();
+            }
+        }
+
+        private void DrowStalactites()
+        {
+            // радиус описаной вокруг символа окружности
+            const float rad = 0.5f;
+
+            Gl.glPointSize(10);
+
+            foreach (var stalactite in _cgnList.Where(c => c.Type == CgnType.Stalactite))
+            {
+                if (ReferenceEquals(stalactite.Name, listBox1.SelectedItem))
+                    Gl.glColor3f(1.0f, 0.5f, 0.5f);
+                else
+                    Gl.glColor3f(0.2f, 0.2f, 0.2f);
+                var x1 = stalactite.Point.X;
+                var y1 = stalactite.Point.Y - rad;
+                var x2 = stalactite.Point.X + Math.Cos(30 * MathConst.Rad) * rad;
+                var y2 = stalactite.Point.Y + Math.Sin(30 * MathConst.Rad) * rad;
+                var x3 = stalactite.Point.X + Math.Cos(150 * MathConst.Rad) * rad;
+                var y3 = stalactite.Point.Y + Math.Sin(150 * MathConst.Rad) * rad;
+
+                Gl.glBegin(Gl.GL_TRIANGLES);
+                Gl.glVertex2d((float)(x1 * _scale + _moveX), (float)(y1 * _scale + _moveY));
+                Gl.glVertex2d((float)(x2 * _scale + _moveX), (float)(y2 * _scale + _moveY));
+                Gl.glVertex2d((float)(x3 * _scale + _moveX), (float)(y3 * _scale + _moveY));
+                Gl.glEnd();
+            }
+        }
+
+        private void DrowStalagnates()
+        {
+            // радиус описаной вокруг символа окружности
+            const float rad = 0.6f;
+
+            //Gl.glPointSize(10);
+
+            foreach (var stalagnate in _cgnList.Where(c => c.Type == CgnType.Stalagnate))
+            {
+                if (ReferenceEquals(stalagnate.Name, listBox1.SelectedItem))
+                    Gl.glColor3f(1.0f, 0.5f, 0.5f);
+                else
+                    Gl.glColor3f(0.2f, 0.2f, 0.2f);
+                var x1 = stalagnate.Point.X;
+                var y1 = stalagnate.Point.Y;
+                var x2 = stalagnate.Point.X + Math.Cos(60 * MathConst.Rad) * rad;
+                var y2 = stalagnate.Point.Y + Math.Sin(60 * MathConst.Rad) * rad;
+                var x3 = stalagnate.Point.X + Math.Cos(120 * MathConst.Rad) * rad;
+                var y3 = stalagnate.Point.Y + Math.Sin(120 * MathConst.Rad) * rad;
+
+                Gl.glBegin(Gl.GL_TRIANGLES);
+                Gl.glVertex2d((float)(x1 * _scale + _moveX), (float)(y1 * _scale + _moveY));
+                Gl.glVertex2d((float)(x2 * _scale + _moveX), (float)(y2 * _scale + _moveY));
+                Gl.glVertex2d((float)(x3 * _scale + _moveX), (float)(y3 * _scale + _moveY));
+                Gl.glEnd();
+
+                x2 = stalagnate.Point.X + Math.Cos(-60 * MathConst.Rad) * rad;
+                y2 = stalagnate.Point.Y + Math.Sin(-60 * MathConst.Rad) * rad;
+                x3 = stalagnate.Point.X + Math.Cos(-120 * MathConst.Rad) * rad;
+                y3 = stalagnate.Point.Y + Math.Sin(-120 * MathConst.Rad) * rad;
+                Gl.glBegin(Gl.GL_TRIANGLES);
+                Gl.glVertex2d((float)(x1 * _scale + _moveX), (float)(y1 * _scale + _moveY));
+                Gl.glVertex2d((float)(x2 * _scale + _moveX), (float)(y2 * _scale + _moveY));
+                Gl.glVertex2d((float)(x3 * _scale + _moveX), (float)(y3 * _scale + _moveY));
+                Gl.glEnd();
+            }
+        }
+
+        private void DrowWays()
+        {
+            foreach (var way in _cgnList.Where(c => c.Type == CgnType.Way))
+            {
+                if (ReferenceEquals(way.Name, listBox1.SelectedItem))
+                    Gl.glColor3f(1.0f, 0.5f, 0.5f);
+                else
+                    Gl.glColor3f(0.0f, 0.0f, 0.0f);
+                PrintText2D((float)(way.Point.X * _scale + _moveX), (float)(way.Point.Y * _scale + _moveY), "?",18);
+            }
+        }
+
+        private void DrowEnters()
+        {
+            // длина стрелки
+            var arrow = 0.7;
+            // длина указателя
+            var pointer = 1.5;
+
+            foreach (var enter in _cgnList.Where(c => c.Type == CgnType.Enter))
+            {
+                if (ReferenceEquals(enter.Name, listBox1.SelectedItem))
+                    Gl.glColor3f(1.0f, 0.5f, 0.5f);
+                else
+                    Gl.glColor3f(0.0f, 0.0f, 0.0f);
+                var x1 = enter.Point.X;
+                var y1 = enter.Point.Y;
+                var x2 = enter.Point.X + Math.Cos((enter.Angle - 90 - 60)*MathConst.Rad)*arrow;
+                var y2 = enter.Point.Y + Math.Sin((enter.Angle - 90 - 60)*MathConst.Rad)*arrow;
+                var x3 = enter.Point.X + Math.Cos((enter.Angle - 90 - 120)*MathConst.Rad)*arrow;
+                var y3 = enter.Point.Y + Math.Sin((enter.Angle - 90 - 120)*MathConst.Rad)*arrow;
+
+                var x4 = enter.Point.X - Math.Cos(enter.Angle*MathConst.Rad)*pointer;
+                var y4 = enter.Point.Y - Math.Sin(enter.Angle*MathConst.Rad)*pointer;
+
+                Gl.glBegin(Gl.GL_TRIANGLES);
+                Gl.glVertex2d((float) (x1*_scale + _moveX), (float) (y1*_scale + _moveY));
+                Gl.glVertex2d((float) (x2*_scale + _moveX), (float) (y2*_scale + _moveY));
+                Gl.glVertex2d((float) (x3*_scale + _moveX), (float) (y3*_scale + _moveY));
+                Gl.glEnd();
+                
+                Gl.glBegin(Gl.GL_LINES);
+                Gl.glVertex2d((float) (x1*_scale + _moveX), (float) (y1*_scale + _moveY));
+                Gl.glVertex2d((float) (x4*_scale + _moveX), (float) (y4*_scale + _moveY));
+                Gl.glEnd();
+
+                Gl.glPointSize(5);
+                Gl.glColor3f(0.5f, 0.5f, 0.5f);
+                Gl.glBegin(Gl.GL_POINTS);
+                Gl.glVertex2d((float) (x1*_scale + _moveX), (float) (y1*_scale + _moveY));
+                Gl.glEnd();
+                Gl.glColor3f(1.0f, 0.7f, 0.0f);
+                Gl.glBegin(Gl.GL_POINTS);
+                Gl.glVertex2d((float) (x4*_scale + _moveX), (float) (y4*_scale + _moveY));
+                Gl.glEnd();
+                Gl.glPointSize(1);
+            }
+        }
+
         private void DrawMap()
         {
             Gl.glClear(Gl.GL_COLOR_BUFFER_BIT | Gl.GL_DEPTH_BUFFER_BIT);
@@ -479,24 +669,56 @@ namespace ETopo
             DrowWalls();
             DrowPrecipice();
             DrowStones();
+            DrowWaters();
+            DrowStalactites();
+            DrowStalagmites();
+            DrowStalagnates();
+            DrowWays();
+            DrowEnters();
             
             Gl.glFlush();
             anT.Invalidate();
         }
 
-        private static void PrintText2D(float x, float y, string text)
+        private static void PrintText2D(float x, float y, string text,int fontSize=9)
         {
 
             // устанавливаем позицию вывода растровых символов 
             // в переданных координатах x и y. 
             Gl.glRasterPos2f(x, y);
 
+            IntPtr font;
+            switch (fontSize)
+            {
+                case 8:
+                    font = Glut.GLUT_BITMAP_8_BY_13;
+                    break;
+                case 9:
+                    font = Glut.GLUT_BITMAP_9_BY_15;
+                    break;
+                case 10:
+                    font = Glut.GLUT_BITMAP_HELVETICA_10;
+                    break;
+                case 12:
+                    font = Glut.GLUT_BITMAP_HELVETICA_12;
+                    break;
+                case 18:
+                    font = Glut.GLUT_BITMAP_HELVETICA_18;
+                    break;
+                case 24:
+                    font = Glut.GLUT_BITMAP_TIMES_ROMAN_24;
+                    break;
+                default:
+                    font = Glut.GLUT_BITMAP_TIMES_ROMAN_10;
+                    break;
+            }
+
             // в цикле foreach перебираем значения из массива text, 
             // который содержит значение строки для визуализации 
             foreach (var liter in text)
             {
-                // визуализируем символ c, с помощью функции glutBitmapCharacter, используя шрифт GLUT_BITMAP_9_BY_15. 
-                Glut.glutBitmapCharacter(Glut.GLUT_BITMAP_9_BY_15, liter);
+                // визуализируем символ с помощью функции glutBitmapCharacter, используя шрифт GLUT_BITMAP_9_BY_15. 
+                Glut.glutBitmapCharacter(font, liter);
             }
         } 
 
@@ -512,57 +734,66 @@ namespace ETopo
             var lineY = ((anT.Height - e.Y)*_devY - _moveY)/_scale;
             if (cbSpline.Checked)
             {
-                if (rbAddWall.Checked && _editPoint == null)
+                if (rbAddWall.Checked && _editPoint == null && _editCgnPoint == null)
                 {
                     var s = new SplinePoint((float) lineX, (float) lineY, _curSpline);
                     _curSpline.Add(s);
                     return;
                 }
+                if (rbAddEnter.Checked && _editPoint == null && _editCgnPoint == null)
+                {
+                    AddCgn(CgnType.Enter, "Вход", (float)lineX, (float)lineY);
+                    return;
+                }
+                if (rbAddWay.Checked && _editPoint == null && _editCgnPoint == null)
+                {
+                    AddCgn(CgnType.Way, "Ход", (float)lineX, (float)lineY);
+                    return;
+                }
             }
             if (cbCGN.Checked)
             {
-                if (rbAddPrecipice.Checked && _editPoint == null)
+                if (rbAddPrecipice.Checked && _editPoint == null && _editCgnPoint == null)
                 {
                     var precip = new SplinePoint((float) lineX, (float) lineY, _curSpline);
                     _curSpline.Add(precip);
                     return;
                 }
-                if (rbStone.Checked)
+                if (rbAddStone.Checked && _editPoint == null && _editCgnPoint == null)
                 {
-                    var numbs = new List<int>();
-                    foreach (var item in listBox1.Items)
-                    {
-                        if (item.ToString().Contains("Камни"))
-                        {
-                            numbs.Add(Convert.ToInt32(item.ToString().Replace("Камни", "")));
-                        }
-                    }
-                    var numb = numbs.Any() ? (numbs.Max() + 1) : 1;
-                    var cgn = new Cgn
-                    {
-                        Point = new Point {X = (float) lineX, Y = (float) lineY},
-                        Type = CgnType.Stone,
-                        Name = "Камни" + numb
-                    };
-                    _cgnList.Add(cgn);
-                    ReloadNames();
+                    AddCgn(CgnType.Stone, "Камни", (float)lineX, (float)lineY);
                     return;
                 }
+                if (rbAddWater.Checked && _editPoint == null)
+                {
+                    AddCgn(CgnType.Water, "Лужи", (float)lineX, (float)lineY);
+                    return;
+                }
+                if (rbAddStalactite.Checked && _editPoint == null && _editCgnPoint == null)
+                {
+                    AddCgn(CgnType.Stalactite,"Сталактит",(float)lineX, (float)lineY );
+                    return;
+                }
+                if (rbAddStalagmite.Checked && _editPoint == null && _editCgnPoint == null)
+                {
+                    AddCgn(CgnType.Stalagmite, "Сталагмит", (float)lineX, (float)lineY);
+                    return;
+                }
+                if (rbAddStalagnate.Checked && _editPoint == null && _editCgnPoint == null)
+                {
+                    AddCgn(CgnType.Stalagnate, "Сталагнат", (float)lineX, (float)lineY);
+                    return;
+                }
+                
             }
             foreach (
                 var piquet in
                     PqList.Where(piquet => Math.Abs(piquet.X - lineX) < 0.5 && Math.Abs(piquet.Y - lineY) < 0.5)
                         .Where(piquet => !_currPqList.Contains(piquet)))
             {
-                lbPiq.Items.Clear();
                 _currPqList.Add(piquet);
                 _currPqList.Sort(
                     (item1, item2) => String.Compare(item1.Name, item2.Name, StringComparison.OrdinalIgnoreCase));
-                foreach (var pq in _currPqList)
-                {
-                    lbPiq.Items.Add(pq.Name);
-                    return;
-                }
             }
 
             foreach (var stone in _cgnList)
@@ -576,13 +807,6 @@ namespace ETopo
             }
 
             listBox1.SelectedItem = null;
-            /*
-            if (_splineX != null && _splineY != null)
-            {
-                // _spline.Add(new Spline { Bias = 0, Cont = 0, Ra = 0, Rb = 0, Tens = 0, X = e.X, Y = e.Y });
-            }
-            _splineX = e.X;
-            _splineY = e.Y;*/
         }
 
         private void anT_MouseDown(object sender, MouseEventArgs e)
@@ -629,6 +853,26 @@ namespace ETopo
                     Math.Abs(lineY - (splinePoint.Point.Y - splinePoint.Rb.Y / 3)) < 0.3)
                 {
                     _editPoint = new EditPoint(splinePoint, "ra");
+                    return;
+                }
+            }
+            foreach (var cgn in _cgnList)
+            {
+                if (Math.Abs(lineX - cgn.Point.X) < 0.5 &&
+                    Math.Abs(lineY - cgn.Point.Y) < 0.5)
+                {
+                    _editCgnPoint = new EditCgnPoint(cgn, "cgn");
+                    return;
+                }
+            }
+            foreach (var enter in _cgnList.Where(r=>r.Type==CgnType.Enter))
+            {
+                var pX = enter.Point.X - Math.Cos(enter.Angle*MathConst.Rad)*1.5;
+                var pY = enter.Point.Y - Math.Sin(enter.Angle*MathConst.Rad)*1.5;
+                if (Math.Abs(lineX - pX) < 0.5 &&
+                    Math.Abs(lineY - pY) < 0.5)
+                {
+                    _editCgnPoint = new EditCgnPoint(enter, "enter");
                     return;
                 }
             }
@@ -684,13 +928,38 @@ namespace ETopo
                         break;
                 }
             }
-
+            if (_editCgnPoint != null)
+            {
+                var lineX = (e.X * _devX - _moveX) / _scale;
+                var lineY = ((anT.Height - e.Y) * _devY - _moveY) / _scale;
+                switch (_editCgnPoint.PointName)
+                {
+                    case "cgn":
+                        _editCgnPoint.Cgn.Point.X = (float)lineX;
+                        _editCgnPoint.Cgn.Point.Y = (float)lineY;
+                        break;
+                    case "enter":
+                        var x0 = _editCgnPoint.Cgn.Point.X;
+                        var y0 = _editCgnPoint.Cgn.Point.Y;
+                        if (Math.Abs(x0 - lineX) < MathConst.Accuracy)
+                        {
+                            _editCgnPoint.Cgn.Angle = 90*(y0 - lineY > 0 ? 1 : -1);
+                        }
+                        else
+                        {
+                            _editCgnPoint.Cgn.Angle = Math.Atan((y0 - lineY)/(x0 - lineX))/MathConst.Rad +
+                                                      (x0 - lineX > 0 ? 0 : 180);
+                        }
+                        break;
+                }
+            }
         }
 
         private void anT_MouseUp(object sender, MouseEventArgs e)
         {
             _move = false;
             _editPoint = null;
+            _editCgnPoint = null;
         }
 
         private void anT_MouseWheel(object sender, MouseEventArgs e)
@@ -698,70 +967,14 @@ namespace ETopo
             // изменение координаты Z в зависимости от направления вращения
             if (e.Delta > 0)
             {
-                _scale+=0.1;
+                _scale+=0.05;
                 return;
             }
             if (e.Delta == 0) return;
-            _scale-=0.1;
+            _scale-=0.05;
+            if (_scale < 0) _scale = 0;
         }
-
-        private void anT_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            
-           /* if (e.KeyChar == (char) Keys.Delete)
-            {
-                var name = listBox1.SelectedItem;
-                _spline.RemoveAll(s => ReferenceEquals(s.Name, name));
-                _cgnList.RemoveAll(c => ReferenceEquals(c.Name, name));
-                ReloadNames();
-                return;
-            }
-            if ((e.KeyChar != (char) Keys.Enter && e.KeyChar != (char) Keys.Escape) || (!cbSpline.Checked&&!cbCGN.Checked)) return;
-            if (e.KeyChar == (char) Keys.Enter)
-            {
-                if (rbAddWall.Checked)
-                {
-                    var numbs = new List<int>();
-                    foreach (var item in listBox1.Items)
-                    {
-                        if (item.ToString().Contains("Стена"))
-                        {
-                            numbs.Add(Convert.ToInt32(item.ToString().Replace("Стена", "")));
-                        }
-                    }
-                    var numb = numbs.Any() ? (numbs.Max() + 1) : 1;
-                    var spline = new Spline(SplineType.Wall, _curSpline) {Name = "Стена" + numb};
-                    _spline.Add(spline);
-                }
-                if (rbAddPrecipice.Checked)
-                {
-                    var numbs = new List<int>();
-                    foreach (var item in listBox1.Items)
-                    {
-                        if (item.ToString().Contains("Обрыв"))
-                        {
-                            numbs.Add(Convert.ToInt32(item.ToString().Replace("Обрыв", "")));
-                        }
-                    }
-                    var numb = numbs.Any() ? (numbs.Max() + 1) : 1;
-                    var spline = new Spline(SplineType.Precipice, _curSpline) {Name = "Обрыв" + numb};
-                    _spline.Add(spline);
-                }
-
-
-                listBox1.Items.Clear();
-                foreach (var spline1 in _spline.Where(s => s.Type == SplineType.Wall))
-                {
-                    listBox1.Items.Add(spline1.Name);
-                }
-                foreach (var spline1 in _spline.Where(s => s.Type == SplineType.Precipice))
-                {
-                    listBox1.Items.Add(spline1.Name);
-                }
-            }
-            _curSpline = new List<SplinePoint>();*/
-        }
-
+        
         private void Graph_Resize(object sender, EventArgs e)
         {
             Gl.glClearColor(255, 255, 255, 1);
@@ -783,45 +996,6 @@ namespace ETopo
             //Gl.glEnable(Gl.GL_DEPTH_TEST);
         }
 
-        private void btClrLst_Click(object sender, EventArgs e)
-        {
-            lbPiq.Items.Clear();
-            _currPqList.Clear();
-        }
-
-        private void btRemList_Click(object sender, EventArgs e)
-        {
-            _currPqList.RemoveAll(pq => pq.Name == (string)lbPiq.SelectedItem);
-            _currPqList.Sort((item1, item2) => String.Compare(item1.Name, item2.Name, StringComparison.OrdinalIgnoreCase));
-            lbPiq.Items.Clear();
-            foreach (var piquet in _currPqList)
-            {
-                lbPiq.Items.Add(piquet.Name);
-            }
-        }
-
-        private void btAddPiqList_Click(object sender, EventArgs e)
-        {
-            var addPq = PqList.Where(pq => pq.Name == tbAddPqName.Text).ToList();
-            if (addPq.Count > 0 && !lbPiq.Items.Contains(tbAddPqName.Text))
-            {
-                lbPiq.Items.Clear();
-                _currPqList.AddRange(addPq);
-                _currPqList.Sort(
-                    (item1, item2) => String.Compare(item1.Name, item2.Name, StringComparison.OrdinalIgnoreCase));
-                foreach (var piquet in _currPqList)
-                {
-                    lbPiq.Items.Add(piquet.Name);
-                }
-            }
-            tbAddPqName.Text = "";
-        }
-
-        private void btListFilt_Click(object sender, EventArgs e)
-        {
-            _listOnly = !_listOnly;
-        }
-
         private void cbSpline_CheckedChanged(object sender, EventArgs e)
         {
             if (cbSpline.Checked)
@@ -831,23 +1005,22 @@ namespace ETopo
             }
             rbAddWall.Enabled = cbSpline.Checked;
             rbAddWay.Enabled = cbSpline.Checked;
-            rbAddWall.Checked = cbSpline.Checked;
-            rbAddWay.Checked = false;
+            rbAddEnter.Enabled = cbSpline.Checked;
             rbAddPrecipice.Enabled = cbCGN.Checked;
-            rbStone.Enabled = cbCGN.Checked;
-        }
-
-        private void cbTrapez_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!cbTrapez.Checked)
-                cbSpline.Checked = false;
-        }
-        
-        private void listBox1_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            //if (e.KeyChar != 13) return;
-            
-            
+            rbAddStone.Enabled = cbCGN.Checked;
+            rbAddWater.Enabled = cbCGN.Checked;
+            rbAddStalactite.Enabled = cbCGN.Checked;
+            rbAddStalagmite.Enabled = cbCGN.Checked;
+            rbAddStalagnate.Enabled = cbCGN.Checked;
+            rbAddWall.Checked = false;
+            rbAddWay.Checked = false;
+            rbAddEnter.Checked = false;
+            rbAddPrecipice.Checked = false;
+            rbAddStone.Checked = false;
+            rbAddWater.Checked = false;
+            rbAddStalactite.Checked = false;
+            rbAddStalagmite.Checked = false;
+            rbAddStalagnate.Checked = false;
         }
 
         private void listBox1_KeyDown(object sender, KeyEventArgs e)
@@ -861,25 +1034,44 @@ namespace ETopo
             }
         }
 
-        private void listBox1_MouseMove(object sender, MouseEventArgs e)
-        {
-            Text = e.Delta.ToString();
-        }
-
         private void ReloadNames()
         {
             listBox1.Items.Clear();
-            foreach (var spline1 in _spline.Where(s => s.Type == SplineType.Wall))
+            foreach (var wall in _spline.Where(s => s.Type == SplineType.Wall))
             {
-                listBox1.Items.Add(spline1.Name);
+                listBox1.Items.Add(wall.Name);
             }
-            foreach (var spline1 in _spline.Where(s => s.Type == SplineType.Precipice))
+            foreach (var way in _cgnList.Where(s => s.Type == CgnType.Way))
             {
-                listBox1.Items.Add(spline1.Name);
+                listBox1.Items.Add(way.Name);
+            }
+            foreach (var enter in _cgnList.Where(s => s.Type == CgnType.Enter))
+            {
+                listBox1.Items.Add(enter.Name);
+            }
+            foreach (var precipice in _spline.Where(s => s.Type == SplineType.Precipice))
+            {
+                listBox1.Items.Add(precipice.Name);
             }
             foreach (var stone in _cgnList.Where(s => s.Type == CgnType.Stone))
             {
                 listBox1.Items.Add(stone.Name);
+            }
+            foreach (var water in _cgnList.Where(s => s.Type == CgnType.Water))
+            {
+                listBox1.Items.Add(water.Name);
+            }
+            foreach (var stalactite in _cgnList.Where(s => s.Type == CgnType.Stalactite))
+            {
+                listBox1.Items.Add(stalactite.Name);
+            }
+            foreach (var stalagmite in _cgnList.Where(s => s.Type == CgnType.Stalagmite))
+            {
+                listBox1.Items.Add(stalagmite.Name);
+            }
+            foreach (var stalagnate in _cgnList.Where(s => s.Type == CgnType.Stalagnate))
+            {
+                listBox1.Items.Add(stalagnate.Name);
             }
         }
 
@@ -890,11 +1082,23 @@ namespace ETopo
                 cbSpline.Checked = false;
             }
             rbAddPrecipice.Enabled = cbCGN.Checked;
-            rbStone.Enabled = cbCGN.Checked;
-            rbAddPrecipice.Checked = cbCGN.Checked;
-            rbStone.Checked = false;
+            rbAddStone.Enabled = cbCGN.Checked;
+            rbAddWater.Enabled = cbCGN.Checked;
+            rbAddStalactite.Enabled = cbCGN.Checked;
+            rbAddStalagmite.Enabled = cbCGN.Checked;
+            rbAddStalagnate.Enabled = cbCGN.Checked;
             rbAddWall.Enabled = cbSpline.Checked;
             rbAddWay.Enabled = cbSpline.Checked;
+            rbAddEnter.Checked = cbSpline.Checked;
+            rbAddWall.Checked = false;
+            rbAddWay.Checked = false;
+            rbAddEnter.Checked = false;
+            rbAddPrecipice.Checked = false;
+            rbAddStone.Checked = false;
+            rbAddWater.Checked = false;
+            rbAddStalactite.Checked = false;
+            rbAddStalagmite.Checked = false;
+            rbAddStalagnate.Checked = false;
         }
 
         private void anT_KeyDown(object sender, KeyEventArgs e)
@@ -937,16 +1141,7 @@ namespace ETopo
                         _spline.Add(spline);
                     }
 
-
-                    listBox1.Items.Clear();
-                    foreach (var spline1 in _spline.Where(s => s.Type == SplineType.Wall))
-                    {
-                        listBox1.Items.Add(spline1.Name);
-                    }
-                    foreach (var spline1 in _spline.Where(s => s.Type == SplineType.Precipice))
-                    {
-                        listBox1.Items.Add(spline1.Name);
-                    }
+                    ReloadNames();
                     _curSpline = new List<SplinePoint>();
                     break;
                 case Keys.Escape:
@@ -954,6 +1149,5 @@ namespace ETopo
                     break;
             }
         }
-
     }
 }

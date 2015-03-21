@@ -11,4 +11,16 @@
             PointName = name;
         }
     }
+
+    public class EditCgnPoint
+    {
+        public Cgn Cgn { get; set; }
+        public string PointName { get; set; }
+
+        public EditCgnPoint(Cgn cgn, string name)
+        {
+            Cgn = cgn;
+            PointName = name;
+        }
+    }
 }
