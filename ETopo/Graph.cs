@@ -1,9 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using iTextSharp.text.pdf;
 using Tao.FreeGlut;
 using Tao.OpenGl;
+using iTextSharp;
+using iTextSharp.text;
+using iTextSharp.text.html;
+using Image = System.Drawing.Image;
 
 namespace ETopo
 {
@@ -13,6 +21,10 @@ namespace ETopo
         private double _moveX;
         private double _moveY;
         private bool _move;
+        private double _maxX = 0;
+        private double _maxY = 0;
+        private double _minX = 0;
+        private double _minY = 0;
         private double _dX;
         private double _dY;
         public double left;
@@ -160,15 +172,15 @@ namespace ETopo
                     X = (float)(x1 - Rotate(trace.Right, 0, alpha + Math.PI / 2).X),
                     Y = (float)(y1 - Rotate(trace.Right, 0, alpha + Math.PI / 2).Y)
                 };
-                if (Math.Abs(trace.FromDown + trace.FromUp + trace.FromLeft + trace.FromRight) < 0.01)
+                if (Math.Abs(trace.FromDown + trace.FromUp + trace.FromLeft + trace.FromRight) < MathConst.Accuracy)
                 {
                     var trace3 = trace;
                     foreach (var trc in TrcList.Where(trc => trc.To == trace3.From))
                     {
-                        point0.X = (float)(x0 + Rotate(trc.Left, 0, alpha + Math.PI / 2).X);
-                        point0.Y = (float)(y0 + Rotate(trc.Left, 0, alpha + Math.PI / 2).Y);
-                        point1.X = (float)(x0 - Rotate(trc.Right, 0, alpha + Math.PI / 2).X);
-                        point1.Y = (float)(y0 - Rotate(trc.Right, 0, alpha + Math.PI / 2).Y);
+                        point0.X = (float) (x0 + Rotate(trc.Left, 0, alpha + Math.PI/2).X);
+                        point0.Y = (float) (y0 + Rotate(trc.Left, 0, alpha + Math.PI/2).Y);
+                        point1.X = (float) (x0 - Rotate(trc.Right, 0, alpha + Math.PI/2).X);
+                        point1.Y = (float) (y0 - Rotate(trc.Right, 0, alpha + Math.PI/2).Y);
                     }
                 }
                 else
@@ -178,6 +190,24 @@ namespace ETopo
                     point1.X = (float)(x0 - Rotate(trace.FromRight, 0, alpha + Math.PI / 2).X);
                     point1.Y = (float)(y0 - Rotate(trace.FromRight, 0, alpha + Math.PI / 2).Y);
                 }
+
+                if (point0.X < _minX) _minX = point0.X;
+                if (point0.Y < _minY) _minY = point0.Y;
+                if (point0.X > _maxX) _maxX = point0.X;
+                if (point0.Y > _maxY) _maxY = point0.Y;
+                if (point1.X < _minX) _minX = point1.X;
+                if (point1.Y < _minY) _minY = point1.Y;
+                if (point1.X > _maxX) _maxX = point1.X;
+                if (point1.Y > _maxY) _maxY = point1.Y;
+                if (point2.X < _minX) _minX = point2.X;
+                if (point2.Y < _minY) _minY = point2.Y;
+                if (point2.X > _maxX) _maxX = point2.X;
+                if (point2.Y > _maxY) _maxY = point2.Y;
+                if (point3.X < _minX) _minX = point3.X;
+                if (point3.Y < _minY) _minY = point3.Y;
+                if (point3.X > _maxX) _maxX = point3.X;
+                if (point3.Y > _maxY) _maxY = point3.Y;
+
                 Gl.glLineWidth(1);
                 Gl.glColor3f(0.5f, 1f, 1f);
                 Gl.glBegin(Gl.GL_QUADS);
@@ -202,12 +232,20 @@ namespace ETopo
                 {
                     x0 = piquet.X;
                     y0 = piquet.Y;
+                    if (x0 < _minX) _minX = x0;
+                    if (y0 < _minY) _minY = y0;
+                    if (x0 > _maxX) _maxX = x0;
+                    if (y0 > _maxY) _maxY = y0;
                 }
                 var trace2 = trace;
                 foreach (var piquet in PqList.Where(piquet => piquet.Name == trace2.To))
                 {
                     x1 = piquet.X;
                     y1 = piquet.Y;
+                    if (x1 < _minX) _minX = x1;
+                    if (y1 < _minY) _minY = y1;
+                    if (x1 > _maxX) _maxX = x1;
+                    if (y1 > _maxY) _maxY = y1;
                 }
                 Gl.glLineWidth(2);
                 Gl.glColor3f(1f, 0, 0);
@@ -256,6 +294,10 @@ namespace ETopo
                     while (t < 1)
                     {
                         var point = GetSplinePoint(spline.PointList[i], spline.PointList[i + 1], t);
+                        if (point.X < _minX) _minX = point.X;
+                        if (point.Y < _minY) _minY = point.Y;
+                        if (point.X > _maxX) _maxX = point.X;
+                        if (point.Y > _maxY) _maxY = point.Y;
                         Gl.glVertex2d(point.X * _scale + _moveX, point.Y * _scale + _moveY);
                         t += 0.1;
                     }
@@ -325,6 +367,10 @@ namespace ETopo
                     while (t < 1)
                     {
                         var point = GetSplinePoint(spline.PointList[i], spline.PointList[i + 1], t);
+                        if (point.X < _minX) _minX = point.X;
+                        if (point.Y < _minY) _minY = point.Y;
+                        if (point.X > _maxX) _maxX = point.X;
+                        if (point.Y > _maxY) _maxY = point.Y;
                         Gl.glVertex2d(point.X * _scale + _moveX, point.Y * _scale + _moveY);
                         t += 0.1;
                     }
@@ -596,6 +642,10 @@ namespace ETopo
                     Gl.glColor3f(1.0f, 0.5f, 0.5f);
                 else
                     Gl.glColor3f(0.0f, 0.0f, 0.0f);
+                if (way.Point.X < _minX) _minX = way.Point.X;
+                if (way.Point.Y < _minY) _minY = way.Point.Y;
+                if (way.Point.X > _maxX) _maxX = way.Point.X;
+                if (way.Point.Y > _maxY) _maxY = way.Point.Y;
                 PrintText2D((float)(way.Point.X * _scale + _moveX), (float)(way.Point.Y * _scale + _moveY), "?",18);
             }
         }
@@ -786,15 +836,6 @@ namespace ETopo
                 }
                 
             }
-            foreach (
-                var piquet in
-                    PqList.Where(piquet => Math.Abs(piquet.X - lineX) < 0.5 && Math.Abs(piquet.Y - lineY) < 0.5)
-                        .Where(piquet => !_currPqList.Contains(piquet)))
-            {
-                _currPqList.Add(piquet);
-                _currPqList.Sort(
-                    (item1, item2) => String.Compare(item1.Name, item2.Name, StringComparison.OrdinalIgnoreCase));
-            }
 
             foreach (var stone in _cgnList)
             {
@@ -814,22 +855,25 @@ namespace ETopo
             if (e.Button != MouseButtons.Left) return;
             var lineX = (e.X*_devX - _moveX)/_scale;
             var lineY = ((anT.Height - e.Y)*_devY - _moveY)/_scale;
+            var deltaX = 5*_devX/_scale;
+            var deltaY = 5*_devY/_scale;
             foreach (var splinePoint in _spline.SelectMany(spline => spline.PointList))
             {
-                if (Math.Abs(lineX - splinePoint.Point.X) < 0.3 &&
-                    Math.Abs(lineY - splinePoint.Point.Y) < 0.3)
+                if (Math.Abs(splinePoint.Point.X - lineX) < deltaX &&
+                    Math.Abs(splinePoint.Point.Y - lineY) < deltaY)
                 {
                     _editPoint = new EditPoint(splinePoint, "point");
                     return;
                 }
-                if (Math.Abs(lineX - (splinePoint.Point.X + splinePoint.Ra.X/3)) < 0.3 &&
-                    Math.Abs(lineY - (splinePoint.Point.Y + splinePoint.Ra.Y/3)) < 0.3)
+                if (Math.Abs((splinePoint.Point.X + splinePoint.Ra.X/3) - lineX) < deltaX &&
+                    Math.Abs((splinePoint.Point.Y + splinePoint.Ra.Y/3) - lineY) < deltaY)
+
                 {
                     _editPoint = new EditPoint(splinePoint, "rb");
                     return;
                 }
-                if (Math.Abs(lineX - (splinePoint.Point.X - splinePoint.Rb.X/3)) < 0.3 &&
-                    Math.Abs(lineY - (splinePoint.Point.Y - splinePoint.Rb.Y/3)) < 0.3)
+                if (Math.Abs((splinePoint.Point.X - splinePoint.Rb.X/3) - lineX) < deltaX &&
+                    Math.Abs((splinePoint.Point.Y - splinePoint.Rb.Y/3) - lineY) < deltaY)
                 {
                     _editPoint = new EditPoint(splinePoint, "ra");
                     return;
@@ -837,20 +881,19 @@ namespace ETopo
             }
             foreach (var splinePoint in _curSpline)
             {
-                if (Math.Abs(lineX - splinePoint.Point.X) < 0.3 &&
-                    Math.Abs(lineY - splinePoint.Point.Y) < 0.3)
+                if (Math.Abs(splinePoint.Point.X - lineX) < deltaX && Math.Abs(splinePoint.Point.Y - lineY) < deltaY)
                 {
                     _editPoint = new EditPoint(splinePoint, "point");
                     return;
                 }
-                if (Math.Abs(lineX - (splinePoint.Point.X + splinePoint.Ra.X / 3)) < 0.3 &&
-                    Math.Abs(lineY - (splinePoint.Point.Y + splinePoint.Ra.Y / 3)) < 0.3)
+                if (Math.Abs(splinePoint.Point.X + splinePoint.Ra.X/3 - lineX) < deltaX &&
+                    Math.Abs(splinePoint.Point.Y + splinePoint.Ra.Y/3 - lineY) < deltaY)
                 {
                     _editPoint = new EditPoint(splinePoint, "rb");
                     return;
                 }
-                if (Math.Abs(lineX - (splinePoint.Point.X - splinePoint.Rb.X / 3)) < 0.3 &&
-                    Math.Abs(lineY - (splinePoint.Point.Y - splinePoint.Rb.Y / 3)) < 0.3)
+                if (Math.Abs(splinePoint.Point.X - splinePoint.Rb.X/3 - lineX) < deltaX &&
+                    Math.Abs(splinePoint.Point.Y - splinePoint.Rb.Y/3 - lineY) < deltaY)
                 {
                     _editPoint = new EditPoint(splinePoint, "ra");
                     return;
@@ -858,19 +901,19 @@ namespace ETopo
             }
             foreach (var cgn in _cgnList)
             {
-                if (Math.Abs(lineX - cgn.Point.X) < 0.5 &&
-                    Math.Abs(lineY - cgn.Point.Y) < 0.5)
+                if (Math.Abs(cgn.Point.X - lineX) < deltaX &&
+                    Math.Abs(cgn.Point.Y - lineY) < deltaY)
                 {
                     _editCgnPoint = new EditCgnPoint(cgn, "cgn");
                     return;
                 }
             }
-            foreach (var enter in _cgnList.Where(r=>r.Type==CgnType.Enter))
+            foreach (var enter in _cgnList.Where(r => r.Type == CgnType.Enter))
             {
                 var pX = enter.Point.X - Math.Cos(enter.Angle*MathConst.Rad)*1.5;
                 var pY = enter.Point.Y - Math.Sin(enter.Angle*MathConst.Rad)*1.5;
-                if (Math.Abs(lineX - pX) < 0.5 &&
-                    Math.Abs(lineY - pY) < 0.5)
+                if (Math.Abs(pX - lineX) < deltaX &&
+                    Math.Abs(pY - lineY) < deltaY)
                 {
                     _editCgnPoint = new EditCgnPoint(enter, "enter");
                     return;
@@ -1148,6 +1191,68 @@ namespace ETopo
                     _curSpline = new List<SplinePoint>();
                     break;
             }
+        }
+
+        private void ConvertToBitmap()
+        {
+            var  bmpOut = new Bitmap(500, 500);
+            var graph = Graphics.FromImage(bmpOut);
+            graph.Clear(System.Drawing.Color.White);
+            var p = new Pen(System.Drawing.Color.Black);
+            foreach (var spline in _spline)
+            {
+                var pLst = new List<System.Drawing.Point>();
+                pLst.Add(new System.Drawing.Point
+                {
+                    X = (int) (spline.PointList[0].Point.X*10),
+                    Y = /*picture.Height */500- (int) (spline.PointList[0].Point.Y*10)
+                });
+                for (var i = 0; i < spline.PointList.Count - 1; i++)
+                {
+                    double t = 0;
+                    while (t < 1)
+                    {
+                        var point = GetSplinePoint(spline.PointList[i], spline.PointList[i + 1], t);
+                        pLst.Add(new System.Drawing.Point((int) (point.X*10), /*picture.Height*/500 - (int) (point.Y*10)));
+                        t += 0.1;
+                    }
+                }
+                graph.DrawLines(p, pLst.ToArray());
+            }
+            
+            var imgStream = new MemoryStream();
+            //picture.Image.Save(imgStream, ImageFormat.Jpeg);
+            //bmp.Save(imgStream, ImageFormat.Jpeg);
+            //imgStream.Position = 0;
+            bmpOut.Save(imgStream,ImageFormat.Jpeg);
+            imgStream.Position = 0;
+            //bmpOut.Save("file.jpg");
+            var pdf = new MemoryStream();
+            var document = new Document(PageSize.A4);
+
+            document.SetMargins(40f, 20f, 5f, 5f);
+            var wrPdf = PdfWriter.GetInstance(document, pdf);
+            wrPdf.CloseStream = false;
+            document.Open();
+            var img = iTextSharp.text.Image.GetInstance(imgStream);
+            document.Add(img);
+            document.Close();
+            pdf.Position = 0;
+            var fileStream = File.Create("file.pdf");
+            //var jpgStream = File.Create("file.jpg");
+            //imgStream.CopyTo(jpgStream);
+            //jpgStream.Close();
+            pdf.CopyTo(fileStream);
+            fileStream.Close();
+            pdf.Close();
+            imgStream.Close();
+            graph.Dispose();
+            //picture.Dispose();
+        }
+
+        private void mSave_Click(object sender, EventArgs e)
+        {
+            ConvertToBitmap();
         }
     }
 }

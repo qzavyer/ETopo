@@ -32,6 +32,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Graph));
             this.tVis = new System.Windows.Forms.Timer(this.components);
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
             this.rbAddEnter = new System.Windows.Forms.RadioButton();
             this.rbAddStalagnate = new System.Windows.Forms.RadioButton();
             this.rbAddStalagmite = new System.Windows.Forms.RadioButton();
@@ -49,7 +50,6 @@
             this.graphMenu = new System.Windows.Forms.MenuStrip();
             this.mFile = new System.Windows.Forms.ToolStripMenuItem();
             this.mSave = new System.Windows.Forms.ToolStripMenuItem();
-            this.label1 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.graphMenu.SuspendLayout();
             this.SuspendLayout();
@@ -80,6 +80,15 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(226, 603);
             this.panel1.TabIndex = 8;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 362);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(129, 17);
+            this.label1.TabIndex = 18;
+            this.label1.Text = "Список элементов";
             // 
             // rbAddEnter
             // 
@@ -280,15 +289,7 @@
             this.mSave.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.mSave.Size = new System.Drawing.Size(197, 22);
             this.mSave.Text = "Сохранить";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 362);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(129, 17);
-            this.label1.TabIndex = 18;
-            this.label1.Text = "Список элементов";
+            this.mSave.Click += new System.EventHandler(this.mSave_Click);
             // 
             // Graph
             // 

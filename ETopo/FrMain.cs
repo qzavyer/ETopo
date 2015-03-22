@@ -36,6 +36,9 @@ namespace ETopo
             if (odLoad.ShowDialog() != DialogResult.OK) return;
             try
             {
+                dgTopo.Rows.Clear();
+                _traceList = new List<Trace>();
+                _piquetLst=new List<Piquet>();
                 using (var zip = ZipFile.Read(odLoad.FileName))
                 {
                     using (var fl = new MemoryStream())
@@ -120,33 +123,25 @@ namespace ETopo
                                         case "f_left":
                                             reader.Read();
                                             dgTopo.Rows[dgTopo.RowCount - 2].Cells[5].Value = reader.Value + "\\" +
-                                                                                              dgTopo.Rows[
-                                                                                                  dgTopo.RowCount - 2]
-                                                                                                  .Cells[5].Value;
+                                                dgTopo.Rows[dgTopo.RowCount - 2].Cells[5].Value;
                                             trc.FromLeft = Convert.ToDouble(reader.Value.Replace('.', ','));
                                             break;
                                         case "f_right":
                                             reader.Read();
                                             dgTopo.Rows[dgTopo.RowCount - 2].Cells[6].Value = reader.Value + "\\" +
-                                                                                              dgTopo.Rows[
-                                                                                                  dgTopo.RowCount - 2]
-                                                                                                  .Cells[6].Value;
+                                                dgTopo.Rows[dgTopo.RowCount - 2].Cells[6].Value;
                                             trc.FromRight = Convert.ToDouble(reader.Value.Replace('.', ','));
                                             break;
                                         case "f_up":
                                             reader.Read();
                                             dgTopo.Rows[dgTopo.RowCount - 2].Cells[7].Value = reader.Value + "\\" +
-                                                                                              dgTopo.Rows[
-                                                                                                  dgTopo.RowCount - 2]
-                                                                                                  .Cells[7].Value;
+                                                dgTopo.Rows[dgTopo.RowCount - 2].Cells[7].Value;
                                             trc.FromUp = Convert.ToDouble(reader.Value.Replace('.', ','));
                                             break;
                                         case "f_down":
                                             reader.Read();
                                             dgTopo.Rows[dgTopo.RowCount - 2].Cells[8].Value = reader.Value + "\\" +
-                                                                                              dgTopo.Rows[
-                                                                                                  dgTopo.RowCount - 2]
-                                                                                                  .Cells[8].Value;
+                                                dgTopo.Rows[dgTopo.RowCount - 2].Cells[8].Value;
                                             trc.FromDown = Convert.ToDouble(reader.Value.Replace('.', ','));
                                             break;
                                         case "note":
@@ -265,7 +260,7 @@ namespace ETopo
                 if (dVals.Count() == 2)
                 {
                     trace.FromDown = Convert.ToDouble(dVals[0]);
-                    trace.Down = Convert.ToDouble(dVals[0]);
+                    trace.Down = Convert.ToDouble(dVals[1]);
                 }
                 else
                 {
@@ -276,7 +271,7 @@ namespace ETopo
                 if (uVals.Count() == 2)
                 {
                     trace.FromUp = Convert.ToDouble(uVals[0]);
-                    trace.Up = Convert.ToDouble(uVals[0]);
+                    trace.Up = Convert.ToDouble(uVals[1]);
                 }
                 else
                 {
@@ -287,7 +282,7 @@ namespace ETopo
                 if (lVals.Count() == 2)
                 {
                     trace.FromLeft = Convert.ToDouble(lVals[0]);
-                    trace.Left = Convert.ToDouble(lVals[0]);
+                    trace.Left = Convert.ToDouble(lVals[1]);
                 }
                 else
                 {
@@ -298,7 +293,7 @@ namespace ETopo
                 if (rVals.Count() == 2)
                 {
                     trace.FromRight = Convert.ToDouble(rVals[0]);
-                    trace.Right = Convert.ToDouble(rVals[0]);
+                    trace.Right = Convert.ToDouble(rVals[1]);
                 }
                 else
                 {
