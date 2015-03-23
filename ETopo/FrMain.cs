@@ -13,8 +13,11 @@ namespace ETopo
 {
     public partial class FrMain : Form
     {
+        public SurveyData _surData = new SurveyData();
         private List<Piquet> _piquetLst = new List<Piquet>();
         private List<Trace> _traceList = new List<Trace>();
+        private List<Spline> _splineList = new List<Spline>();
+        private List<Cgn> _cgnList = new List<Cgn>();
         private string _name;
         private string _date;
         private List<string> _autor;
@@ -57,19 +60,26 @@ namespace ETopo
                                     switch (reader.Name)
                                     {
                                         case "team":
-                                            _autor = new List<string>();
+                                            _surData.Team = new List<string>();
                                             break;
                                         case "name":
                                             reader.Read();
-                                            _autor.Add(reader.Value);
+                                            _surData.Team.Add(reader.Value);
                                             break;
                                         case "date":
                                             reader.Read();
-                                            _date = reader.Value;
+                                            try
+                                            {
+                                                _surData.Date = Convert.ToDateTime(reader.Value);
+                                            }
+                                            catch
+                                            {
+                                                _surData.Date = new DateTime();
+                                            }
                                             break;
                                         case "title":
                                             reader.Read();
-                                            _name = reader.Value;
+                                            _surData.Name = reader.Value;
                                             break;
                                         case "segment":
                                             dgTopo.Rows.Add();
@@ -219,6 +229,204 @@ namespace ETopo
 
                         }
                     }
+
+                    using (var fl = new MemoryStream())
+                    {
+                        var splEnt = zip["spline.xml"];
+                        try
+                        {
+                            splEnt.Extract(fl);
+                            fl.Position = 0;
+                            using (var splReader = XmlReader.Create(fl))
+                            {
+
+                                var spline = new Spline();
+                                while (splReader.Read())
+                                {
+                                    if (splReader.NodeType == XmlNodeType.Element)
+                                    {
+                                        switch (splReader.Name)
+                                        {
+                                            case "spline":
+                                                if (splReader.IsEmptyElement) break;
+                                                spline = new Spline();
+                                                break;
+                                            case "name":
+                                                if (splReader.IsEmptyElement) break;
+                                                splReader.Read();
+                                                spline.Name = splReader.Value;
+                                                break;
+                                            case "type":
+                                                if (splReader.IsEmptyElement) break;
+                                                splReader.Read();
+                                                spline.Type =
+                                                    (SplineType) Enum.Parse(typeof (SplineType), splReader.Value);
+                                                break;
+                                            case "dirrection":
+                                                if (splReader.IsEmptyElement) break;
+                                                splReader.Read();
+                                                spline.Dirrection =
+                                                    (SplineDirrection)
+                                                        Enum.Parse(typeof (SplineDirrection), splReader.Value);
+                                                break;
+                                            case "points":
+                                                while (splReader.Read()&&(splReader.NodeType != XmlNodeType.EndElement ||
+                                                       splReader.Name != "points"))
+                                                {
+                                                    var tX = 0D;
+                                                    var tY = 0D;
+                                                    var tRaX = 0D;
+                                                    var tRaY = 0D;
+                                                    var tRbX = 0D;
+                                                    var tRbY = 0D;
+                                                    while (splReader.Read()&&(splReader.NodeType != XmlNodeType.EndElement ||
+                                                           splReader.Name != "point"))
+                                                    {
+                                                        if (splReader.NodeType == XmlNodeType.Element)
+                                                        {
+                                                            switch (splReader.Name)
+                                                            {
+                                                                case "x":
+                                                                    if (splReader.IsEmptyElement) break;
+                                                                    splReader.Read();
+                                                                    tX =
+                                                                        Convert.ToDouble(splReader.Value.Replace('.',
+                                                                            ','));
+                                                                    break;
+                                                                case "y":
+                                                                    if (splReader.IsEmptyElement) break;
+                                                                    splReader.Read();
+                                                                    tY =
+                                                                        Convert.ToDouble(splReader.Value.Replace('.',
+                                                                            ','));
+                                                                    break;
+                                                                case "ra_x":
+                                                                    if (splReader.IsEmptyElement) break;
+                                                                    splReader.Read();
+                                                                    tRaX =
+                                                                        Convert.ToDouble(splReader.Value.Replace('.',
+                                                                            ','));
+                                                                    break;
+                                                                case "ra_y":
+                                                                    if (splReader.IsEmptyElement) break;
+                                                                    splReader.Read();
+                                                                    tRaY =
+                                                                        Convert.ToDouble(splReader.Value.Replace('.',
+                                                                            ','));
+                                                                    break;
+                                                                case "rb_x":
+                                                                    if (splReader.IsEmptyElement) break;
+                                                                    splReader.Read();
+                                                                    tRbX =
+                                                                        Convert.ToDouble(splReader.Value.Replace('.',
+                                                                            ','));
+                                                                    break;
+                                                                case "rb_y":
+                                                                    if (splReader.IsEmptyElement) break;
+                                                                    splReader.Read();
+                                                                    tRbY =
+                                                                        Convert.ToDouble(splReader.Value.Replace('.',
+                                                                            ','));
+                                                                    break;
+                                                            }
+                                                        }
+                                                    }
+                                                    spline.PointList.Add(new SplinePoint((float) tX, (float) tY,
+                                                        (float) tRaX,
+                                                        (float) tRaY, (float) tRbX, (float) tRbY));
+                                                }
+                                                break;
+                                        }
+
+                                    }
+                                    else if (splReader.NodeType == XmlNodeType.EndElement && splReader.Name == "spline")
+                                    {
+                                        _splineList.Add(spline);
+                                    }
+                                } //while(reader.Read())
+
+                            }
+                        }
+                        catch
+                        {
+                        }
+                    }
+
+                    using (var fl = new MemoryStream())
+                    {
+                        var splEnt = zip["cgn.xml"];
+                        try
+                        {
+                            splEnt.Extract(fl);
+                            fl.Position = 0;
+                            using (var cgnReader = XmlReader.Create(fl))
+                            {
+                                var x = 0D;
+                                var y = 0D;
+                                var changex = false;
+                                var changey = false;
+                                var cgn = new Cgn();
+                                while (cgnReader.Read())
+                                {
+                                    if (cgnReader.NodeType == XmlNodeType.Element)
+                                    {
+                                        switch (cgnReader.Name)
+                                        {
+                                            case "cgn":
+                                                if (cgnReader.IsEmptyElement) break;
+                                                cgn = new Cgn();
+                                                break;
+                                            case "name":
+                                                if (cgnReader.IsEmptyElement) break;
+                                                cgnReader.Read();
+                                                cgn.Name = cgnReader.Value;
+                                                break;
+                                            case "type":
+                                                if (cgnReader.IsEmptyElement) break;
+                                                cgnReader.Read();
+                                                cgn.Type = (CgnType) Enum.Parse(typeof (CgnType), cgnReader.Value);
+                                                break;
+                                            case "x":
+                                                if (cgnReader.IsEmptyElement) break;
+                                                cgnReader.Read();
+                                                x = Convert.ToDouble(cgnReader.Value.Replace('.', ','));
+                                                changex = true;
+                                                if(changex&&changey)
+                                                    cgn.Point = new Point((float)x, (float)y);
+                                                break;
+                                            case "y":
+                                                if (cgnReader.IsEmptyElement) break;
+                                                cgnReader.Read();
+                                                y = Convert.ToDouble(cgnReader.Value.Replace('.', ','));
+                                                changey = true;
+                                                if (changex && changey)
+                                                    cgn.Point = new Point((float)x, (float)y);
+                                                break;
+                                            case "angle":
+                                                if (cgnReader.IsEmptyElement) break;
+                                                cgnReader.Read();
+                                                cgn.Angle = Convert.ToDouble(cgnReader.Value.Replace('.', ','));
+                                                break;
+                                        }
+
+                                    }
+                                    else if (cgnReader.NodeType == XmlNodeType.EndElement && cgnReader.Name == "cgn")
+                                    {
+                                        _cgnList.Add(cgn);
+                                        x = 0D;
+                                        y = 0D;
+                                        changex = false;
+                                        changey = false;
+                                    }
+                                } //while(reader.Read())
+
+                            }
+                        }
+                        catch
+                        {
+                        }
+
+                    }
                 }
 
             }
@@ -345,14 +553,15 @@ namespace ETopo
                         var writer = XmlWriter.Create(wr);
                         writer.WriteStartDocument();
                         writer.WriteStartElement("cave");
-                        writer.WriteElementString("title", _name);
+                        writer.WriteElementString("title", _surData.Name);
                         writer.WriteStartElement("survey");
-                        writer.WriteElementString("date", _date);
+                        writer.WriteElementString("date", _surData.Date==null?"":_surData.Date.Value.ToString("dd.MM.yyyy"));
                         writer.WriteStartElement("team");
-                        foreach (var item in _autor)
-                        {
-                            writer.WriteElementString("name", item);
-                        }
+                        if(_surData.Team!=null)
+                            foreach (var item in _surData.Team)
+                            {
+                                writer.WriteElementString("name", item);
+                            }
                         writer.WriteEndElement();
                         foreach (var trace in _traceList)
                         {
@@ -367,13 +576,16 @@ namespace ETopo
                             writer.WriteElementString("up", trace.Up.ToString(CultureInfo.InvariantCulture));
                             writer.WriteElementString("down", trace.Down.ToString(CultureInfo.InvariantCulture));
                             if (trace.FromLeft > 0)
-                                writer.WriteElementString("f_left", trace.FromLeft.ToString(CultureInfo.InvariantCulture));
+                                writer.WriteElementString("f_left",
+                                    trace.FromLeft.ToString(CultureInfo.InvariantCulture));
                             if (trace.FromRight > 0)
-                                writer.WriteElementString("f_right", trace.FromRight.ToString(CultureInfo.InvariantCulture));
+                                writer.WriteElementString("f_right",
+                                    trace.FromRight.ToString(CultureInfo.InvariantCulture));
                             if (trace.FromUp > 0)
                                 writer.WriteElementString("f_up", trace.FromUp.ToString(CultureInfo.InvariantCulture));
                             if (trace.FromDown > 0)
-                                writer.WriteElementString("f_down", trace.FromDown.ToString(CultureInfo.InvariantCulture));
+                                writer.WriteElementString("f_down",
+                                    trace.FromDown.ToString(CultureInfo.InvariantCulture));
                             if (!string.IsNullOrEmpty(trace.Note))
                                 writer.WriteElementString("note", trace.Note);
                             writer.WriteEndElement();
@@ -382,7 +594,7 @@ namespace ETopo
                         writer.WriteEndElement();
                         writer.WriteEndDocument();
                         writer.Flush();
-                        zipp.Write(wr.ToArray(), 0, (int)wr.Length);
+                        zipp.Write(wr.ToArray(), 0, (int) wr.Length);
                     }
                     zipp.PutNextEntry("piquet.xml");
                     using (var wr = new MemoryStream())
@@ -404,18 +616,78 @@ namespace ETopo
                         writer.WriteEndElement();
                         writer.WriteEndDocument();
                         writer.Flush();
-                        zipp.Write(wr.ToArray(), 0, (int)wr.Length);
+                        zipp.Write(wr.ToArray(), 0, (int) wr.Length);
+                    }
+
+                    zipp.PutNextEntry("spline.xml");
+                    using (var wr = new MemoryStream())
+                    {
+                        var writer = XmlWriter.Create(wr);
+                        writer.WriteStartDocument();
+                        writer.WriteStartElement("cave");
+                        foreach (var spline in _splineList)
+                        {
+                            writer.WriteStartElement("spline");
+                            writer.WriteElementString("name", spline.Name);
+                            writer.WriteElementString("type", spline.Type.ToString());
+                            writer.WriteElementString("dirrection", spline.Dirrection.ToString());
+                            writer.WriteStartElement("points");
+                            foreach (var point in spline.PointList)
+                            {
+                                writer.WriteStartElement("point");
+                                writer.WriteElementString("x", point.Point.X.ToString());
+                                writer.WriteElementString("y", point.Point.Y.ToString());
+                                writer.WriteElementString("ra_x", point.Ra.X.ToString());
+                                writer.WriteElementString("ra_y", point.Ra.Y.ToString());
+                                writer.WriteElementString("rb_x", point.Rb.X.ToString());
+                                writer.WriteElementString("rb_y", point.Rb.Y.ToString());
+                                writer.WriteEndElement();
+                            }
+                            writer.WriteEndElement();
+                            writer.WriteEndElement();
+                        }
+                        writer.WriteEndElement();
+                        writer.WriteEndDocument();
+                        writer.Flush();
+                        zipp.Write(wr.ToArray(), 0, (int) wr.Length);
+                    }
+
+                    zipp.PutNextEntry("cgn.xml");
+                    using (var wr = new MemoryStream())
+                    {
+                        var writer = XmlWriter.Create(wr);
+                        writer.WriteStartDocument();
+                        writer.WriteStartElement("cave");
+                        foreach (var cgn in _cgnList)
+                        {
+                            writer.WriteStartElement("cgn");
+                            writer.WriteElementString("name", cgn.Name);
+                            writer.WriteElementString("type", cgn.Type.ToString());
+                            writer.WriteElementString("x", cgn.Point.X.ToString());
+                            writer.WriteElementString("y", cgn.Point.Y.ToString());
+                            writer.WriteElementString("angle", cgn.Angle.ToString());
+                            writer.WriteEndElement();
+                        }
+                        writer.WriteEndElement();
+                        writer.WriteEndDocument();
+                        writer.Flush();
+                        zipp.Write(wr.ToArray(), 0, (int) wr.Length);
                     }
                 }
             }
-
             MessageBox.Show(Resources.Saved);
         }
         
         private void dToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if(_piquetLst==null||_piquetLst.Count==0||_traceList==null||_traceList.Count==0) return;
-            var fr = new Graph {PqList = _piquetLst, TrcList = _traceList};
+            var fr = new Graph
+            {
+                PqList = _piquetLst,
+                TrcList = _traceList,
+                SplList = _splineList,
+                CgnList = _cgnList
+            };
             var d = Math.Max(_traceList.Max(t => t.Left), _traceList.Max(t => t.Right));
             fr.top = _piquetLst.Max(p => p.Y)+d;
             fr.bottom = _piquetLst.Min(p => p.Y)-d;
@@ -426,11 +698,16 @@ namespace ETopo
 
         private void mData_Click(object sender, EventArgs e)
         {
-            var fr = new FrTopoData {name = _name, date = _date, autor = _autor};
+            var fr = new FrTopoData
+            {
+                name = _surData.Name,
+                date = _surData.Date == null ? DateTime.Now : _surData.Date.Value,
+                autor = _surData.Team
+            };
             fr.ShowDialog();
-            _name = fr.name;
-            _date = fr.date;
-            _autor = fr.autor;
+            _surData.Name = fr.name;
+            _surData.Date = fr.date;
+            _surData.Team = fr.autor;
         }
 
         private void ExitMenu_Click(object sender, EventArgs e)

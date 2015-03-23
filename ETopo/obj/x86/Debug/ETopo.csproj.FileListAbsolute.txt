@@ -14,5 +14,4 @@ C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopo\obj\x86\Debug
 C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopo\obj\x86\Debug\ETopo.TrustInfo.xml
 C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopo\obj\x86\Debug\ETopo.exe.manifest
 C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopo\obj\x86\Debug\ETopo.application
-C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopo\obj\x86\Debug\ETopo.FrDrawing.resources
 C:\Users\qzavyer\Documents\Visual Studio 2010\Projects\ETopo\ETopo\bin\Debug\itextsharp.dll

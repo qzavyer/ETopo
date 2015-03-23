@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ETopo
 {
@@ -133,7 +134,7 @@ namespace ETopo
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button btOk;
         public string name;
-        public string date;
+        public DateTime date;
         public List<string> autor;
     }
 }

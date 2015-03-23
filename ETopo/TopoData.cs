@@ -14,7 +14,7 @@ namespace ETopo
         private void btOk_Click(object sender, EventArgs e)
         {
             name = tbName.Text;
-            date = cbDate.Value.ToString("dd.MM.yyyy");
+            date = cbDate.Value;
             autor = tbAutor.Lines.ToList();
             Close();
         }

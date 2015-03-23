@@ -20,6 +20,18 @@ namespace ETopo
         public List<SplinePoint> PointList { get; set; }
         public SplineDirrection Dirrection { get; set; }
 
+        public Spline()
+        {
+            PointList = new List<SplinePoint>();
+        }
+
+        public Spline(Spline spline)
+        {
+            Name = spline.Name;
+            Type = spline.Type;
+            Dirrection = spline.Dirrection;
+            PointList = spline.PointList;
+        }
         public Spline(List<SplinePoint> points)
         {
             Name = "";
@@ -48,6 +60,20 @@ namespace ETopo
         public Point Point { get; set; }
         public Point Ra { get; set; }
         public Point Rb { get; set; }
+
+        public SplinePoint(float x, float y, float raX, float raY, float rbX, float rbY)
+        {
+            Point = new Point(x, y);
+            Ra = new Point(raX, raY);
+            Rb = new Point(rbX, rbY);
+        }
+
+        public SplinePoint(Point point, Point ra, Point rb)
+        {
+            Point = point;
+            Ra = ra;
+            Rb = rb;
+        }
 
         public SplinePoint(float x, float y, List<SplinePoint> list)
         {

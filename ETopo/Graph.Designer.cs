@@ -50,6 +50,8 @@
             this.graphMenu = new System.Windows.Forms.MenuStrip();
             this.mFile = new System.Windows.Forms.ToolStripMenuItem();
             this.mSave = new System.Windows.Forms.ToolStripMenuItem();
+            this.экспортВPDFToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sdSave = new System.Windows.Forms.SaveFileDialog();
             this.panel1.SuspendLayout();
             this.graphMenu.SuspendLayout();
             this.SuspendLayout();
@@ -278,7 +280,8 @@
             // mFile
             // 
             this.mFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mSave});
+            this.mSave,
+            this.экспортВPDFToolStripMenuItem});
             this.mFile.Name = "mFile";
             this.mFile.Size = new System.Drawing.Size(54, 22);
             this.mFile.Text = "Файл";
@@ -290,6 +293,12 @@
             this.mSave.Size = new System.Drawing.Size(197, 22);
             this.mSave.Text = "Сохранить";
             this.mSave.Click += new System.EventHandler(this.mSave_Click);
+            // 
+            // экспортВPDFToolStripMenuItem
+            // 
+            this.экспортВPDFToolStripMenuItem.Name = "экспортВPDFToolStripMenuItem";
+            this.экспортВPDFToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.экспортВPDFToolStripMenuItem.Text = "Экспорт в PDF";
             // 
             // Graph
             // 
@@ -337,5 +346,7 @@
         private System.Windows.Forms.ToolStripMenuItem mFile;
         private System.Windows.Forms.ToolStripMenuItem mSave;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ToolStripMenuItem экспортВPDFToolStripMenuItem;
+        private System.Windows.Forms.SaveFileDialog sdSave;
     }
 }
