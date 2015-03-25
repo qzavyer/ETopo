@@ -118,6 +118,7 @@
       <DependentUpon>Graph.cs</DependentUpon>
     </Compile>
     <Compile Include="MathConst.cs" />
+    <Compile Include="PdfElement.cs" />
     <Compile Include="Piquet.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -50,8 +50,9 @@
             this.graphMenu = new System.Windows.Forms.MenuStrip();
             this.mFile = new System.Windows.Forms.ToolStripMenuItem();
             this.mSave = new System.Windows.Forms.ToolStripMenuItem();
-            this.экспортВPDFToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mExport = new System.Windows.Forms.ToolStripMenuItem();
             this.sdSave = new System.Windows.Forms.SaveFileDialog();
+            this.sdPdf = new System.Windows.Forms.SaveFileDialog();
             this.panel1.SuspendLayout();
             this.graphMenu.SuspendLayout();
             this.SuspendLayout();
@@ -281,7 +282,7 @@
             // 
             this.mFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mSave,
-            this.экспортВPDFToolStripMenuItem});
+            this.mExport});
             this.mFile.Name = "mFile";
             this.mFile.Size = new System.Drawing.Size(54, 22);
             this.mFile.Text = "Файл";
@@ -294,11 +295,17 @@
             this.mSave.Text = "Сохранить";
             this.mSave.Click += new System.EventHandler(this.mSave_Click);
             // 
-            // экспортВPDFToolStripMenuItem
+            // mExport
             // 
-            this.экспортВPDFToolStripMenuItem.Name = "экспортВPDFToolStripMenuItem";
-            this.экспортВPDFToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
-            this.экспортВPDFToolStripMenuItem.Text = "Экспорт в PDF";
+            this.mExport.Name = "mExport";
+            this.mExport.Size = new System.Drawing.Size(197, 22);
+            this.mExport.Text = "Экспорт в PDF";
+            this.mExport.Click += new System.EventHandler(this.mExport_Click);
+            // 
+            // sdPdf
+            // 
+            this.sdPdf.DefaultExt = "pdf";
+            this.sdPdf.Filter = "Файлы PDF|*.pdf";
             // 
             // Graph
             // 
@@ -346,7 +353,8 @@
         private System.Windows.Forms.ToolStripMenuItem mFile;
         private System.Windows.Forms.ToolStripMenuItem mSave;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ToolStripMenuItem экспортВPDFToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mExport;
         private System.Windows.Forms.SaveFileDialog sdSave;
+        private System.Windows.Forms.SaveFileDialog sdPdf;
     }
 }

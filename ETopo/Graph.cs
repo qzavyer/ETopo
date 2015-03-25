@@ -36,11 +36,8 @@ namespace ETopo
         public double right;
         public double bottom;
         public double top;
-        //private double? _splineX;
-        //private double? _splineY;
         private double _devX;
         private double _devY;
-        //private bool _listOnly;
         private EditPoint _editPoint;
         private EditCgnPoint _editCgnPoint;
 
@@ -73,12 +70,8 @@ namespace ETopo
             Glu.gluOrtho2D(0.0, screenW, 0.0, screenH);
             Gl.glMatrixMode(Gl.GL_MODELVIEW);
             Gl.glLoadIdentity();
-            //Gl.glEnable(Gl.GL_DEPTH_TEST);
-
-            //SplList = new List<Spline>();
             _curSpline = new List<SplinePoint>();
             _currPqList = new List<Piquet>();
-            //CgnList = new List<Cgn>();
             _editPoint = null;
 
             tVis.Enabled = true;
@@ -119,6 +112,14 @@ namespace ETopo
                 X = (float) (x*Math.Cos(alpha) - y*Math.Sin(alpha)),
                 Y = (float) (x*Math.Sin(alpha) + y*Math.Cos(alpha))
             };
+        }
+
+        private static System.Drawing.Point Rotate(float x, float y, double alpha)
+        {
+            return new System.Drawing.Point(
+                (int) (x*Math.Cos(alpha) - y*Math.Sin(alpha)),
+                (int) (x*Math.Sin(alpha) + y*Math.Cos(alpha))
+                );
         }
 
         private void AddCgn(CgnType type, string prefix, float x, float y)
@@ -363,6 +364,7 @@ namespace ETopo
 
         private void DrowPrecipice()
         {
+            // рисование сплайна
             foreach (var spline in SplList.Where(s => s.Type == SplineType.Precipice))
             {
                 Gl.glColor3f(ReferenceEquals(spline.Name, listBox1.SelectedItem) ? 1.0f : 0.5f, 0.5f, 0.5f);
@@ -384,11 +386,10 @@ namespace ETopo
                 Gl.glEnd();
             }
 
+            // рисование штрихов
             Gl.glColor3f(0.5f, 0.5f, 0.5f);
             foreach (var spline in SplList.Where(s => s.Type == SplineType.Precipice))
             {
-
-
                 for (var i = 0; i < spline.PointList.Count - 1; i++)
                 {
                     double t = 0;
@@ -405,7 +406,7 @@ namespace ETopo
                             X = derPoint.X/(float) Math.Sqrt(derPoint.X*derPoint.X + derPoint.Y*derPoint.Y),
                             Y = derPoint.Y/(float) Math.Sqrt(derPoint.X*derPoint.X + derPoint.Y*derPoint.Y)
                         };
-                        p = Rotate(p.X, p.Y, 90);
+                        p = Rotate((double) p.X, p.Y, 90*MathConst.Rad);
                         Gl.glBegin(Gl.GL_LINE_STRIP);
                         Gl.glVertex2d(point.X*_scale + _moveX, point.Y*_scale + _moveY);
                         Gl.glVertex2d((point.X + p.X/5)*_scale + _moveX, (point.Y + p.Y/5)*_scale + _moveY);
@@ -415,6 +416,7 @@ namespace ETopo
                 }
             }
 
+            // рисование управляющих точек
             Gl.glPointSize(5);
             Gl.glBegin(Gl.GL_POINTS);
             foreach (var spline in SplList.Where(s => s.Type == SplineType.Precipice))
@@ -434,6 +436,7 @@ namespace ETopo
             }
             Gl.glEnd();
 
+            // рисование текущего сплайна
             Gl.glColor3f(0.8f, 1.0f, 0.0f);
             Gl.glBegin(Gl.GL_LINES);
             for (var i = 0; i < _curSpline.Count - 1; i++)
@@ -448,6 +451,7 @@ namespace ETopo
             }
             Gl.glEnd();
 
+            // рисование управляющих точек текущего сплайна
             Gl.glPointSize(5);
             Gl.glBegin(Gl.GL_POINTS);
             foreach (var point in _curSpline)
@@ -1199,44 +1203,106 @@ namespace ETopo
             }
         }
 
-        private void ConvertToBitmap()
+        private void ConvertToBitmap(string fileName)
         {
-            var bmpOut = new Bitmap(500, 500);
+            var elements = new List<PdfElement>();
+            double tan;
+            if (Math.Abs(_maxX - _minX) < MathConst.Accuracy)
+            {
+                tan = 45*MathConst.Rad;
+            }
+            else
+            {
+                tan = 45*MathConst.Rad - Math.Atan((_maxY - _minY)/(_maxX - _minX));
+            }
+
+            var bmpOut = new Bitmap(520, 520);
             var graph = Graphics.FromImage(bmpOut);
             graph.Clear(System.Drawing.Color.White);
-            var p = new Pen(System.Drawing.Color.Black);
+            var pen = new Pen(System.Drawing.Color.Black);
+            // рисование сплайнов
             foreach (var spline in SplList)
             {
-                var pLst = new List<System.Drawing.Point>();
-                pLst.Add(new System.Drawing.Point
-                {
-                    X = (int) (spline.PointList[0].Point.X*10),
-                    Y = /*picture.Height */ 500 - (int) (spline.PointList[0].Point.Y*10)
-                });
+                var pLst = new List<Point>();
+                pLst.Add(Rotate((double)spline.PointList[0].Point.X, spline.PointList[0].Point.Y, tan));
+            
                 for (var i = 0; i < spline.PointList.Count - 1; i++)
                 {
                     double t = 0;
                     while (t < 1)
                     {
                         var point = GetSplinePoint(spline.PointList[i], spline.PointList[i + 1], t);
-                        pLst.Add(new System.Drawing.Point((int) (point.X*10), /*picture.Height*/500 - (int) (point.Y*10)));
+                        pLst.Add(Rotate((double)point.X, point.Y, tan));
                         t += 0.1;
                     }
                 }
-                graph.DrawLines(p, pLst.ToArray());
+                elements.Add(new PdfElement {Pen = pen, Points = pLst.ToArray(), Type = DrawType.Lines});
+            }
+            // рисование штрихов
+            foreach (var spline in SplList.Where(s => s.Type == SplineType.Precipice))
+            {
+                var pLst = new List<Point>();
+                for (var i = 0; i < spline.PointList.Count - 1; i++)
+                {
+                    double t = 0;
+                    var p1 = spline.PointList[i].Point;
+                    var p2 = spline.PointList[i + 1].Point;
+                    var len = Math.Sqrt((p1.X - p2.X)*(p1.X - p2.X) + (p1.Y - p2.Y)*(p1.Y - p2.Y))*2;
+                    while (t < 1)
+                    {
+                        var point = GetSplinePoint(spline.PointList[i], spline.PointList[i + 1], t);
+                        var derPoint = GetDerSplinePoint(spline.PointList[i], spline.PointList[i + 1], t);
+
+                        var p = new Point
+                        {
+                            X = derPoint.X / (float)Math.Sqrt(derPoint.X * derPoint.X + derPoint.Y * derPoint.Y),
+                            Y = derPoint.Y / (float)Math.Sqrt(derPoint.X * derPoint.X + derPoint.Y * derPoint.Y)
+                        };
+                        p = Rotate((double)p.X, p.Y, 90 * MathConst.Rad);
+                        pLst.Add(Rotate((double)point.X, point.Y, tan));
+                        pLst.Add(Rotate((double)point.X + p.X / 5, point.Y + p.Y / 5, tan));
+                        t += 1 / len;
+                    }
+                }
+                elements.Add(new PdfElement { Pen = pen, Points = pLst.ToArray(), Type = DrawType.Lines });
             }
 
+            if (elements.Any())
+            {
+                var minX = elements[0].Points[0].X;
+                var minY = elements[0].Points[0].Y;
+                var maxX = elements[0].Points[0].X;
+                var maxY = elements[0].Points[0].Y;
+                foreach (var point in elements.SelectMany(element => element.Points))
+                {
+                    maxX = Math.Max(point.X, maxX);
+                    maxY = Math.Max(point.Y, maxY);
+                    minX = Math.Min(point.X, minX);
+                    minY = Math.Min(point.Y, minY);
+                }
+                var max = Math.Max(maxX - minX, maxY - minY);
+                if(max<MathConst.Accuracy ) return;
+                var scale = 500/max;
+                foreach (var point in elements.SelectMany(element => element.Points))
+                {
+                    point.X = (point.X - minX)*scale;
+                    point.Y = (point.Y - minY)*scale;
+                }
+
+                foreach (var source in elements.Where(r=>r.Type==DrawType.Lines))
+                {
+                    var points = source.Points.Select(
+                        point => new System.Drawing.Point((int) point.X + 10, 500 - (int) point.Y)).ToArray();
+                    graph.DrawLines(source.Pen, points);
+                }
+            }
             var imgStream = new MemoryStream();
-            //picture.Image.Save(imgStream, ImageFormat.Jpeg);
-            //bmp.Save(imgStream, ImageFormat.Jpeg);
-            //imgStream.Position = 0;
             bmpOut.Save(imgStream, ImageFormat.Jpeg);
             imgStream.Position = 0;
-            //bmpOut.Save("file.jpg");
             var pdf = new MemoryStream();
             var document = new Document(PageSize.A4);
-
             document.SetMargins(40f, 20f, 5f, 5f);
+            
             var wrPdf = PdfWriter.GetInstance(document, pdf);
             wrPdf.CloseStream = false;
             document.Open();
@@ -1244,7 +1310,7 @@ namespace ETopo
             document.Add(img);
             document.Close();
             pdf.Position = 0;
-            var fileStream = File.Create("file.pdf");
+            var fileStream = File.Create(fileName);
             pdf.CopyTo(fileStream);
             fileStream.Close();
             pdf.Close();
@@ -1387,6 +1453,12 @@ namespace ETopo
                 }
             }
             MessageBox.Show(Resources.Saved);
+        }
+
+        private void mExport_Click(object sender, EventArgs e)
+        {
+            if (sdPdf.ShowDialog() != DialogResult.OK) return;
+            ConvertToBitmap(sdPdf.FileName);
         }
     }
 }
