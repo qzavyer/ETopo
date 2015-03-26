@@ -58,14 +58,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="ETopo.exe" size="108544">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="ETopo.exe" size="120832">
       <assemblyIdentity name="ETopo" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>LkhlffGsXx7YJ0vYOT4lahmVh64=</dsig:DigestValue>
+        <dsig:DigestValue>YTuBaolny+mvOSbXOlmScKDy25k=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

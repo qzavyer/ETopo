@@ -41,7 +41,9 @@ namespace ETopo
             {
                 dgTopo.Rows.Clear();
                 _traceList = new List<Trace>();
-                _piquetLst=new List<Piquet>();
+                _piquetLst = new List<Piquet>();
+                _cgnList = new List<Cgn>();
+                _splineList = new List<Spline>();
                 using (var zip = ZipFile.Read(odLoad.FileName))
                 {
                     using (var fl = new MemoryStream())

@@ -12,10 +12,8 @@ using Ionic.Zip;
 using iTextSharp.text.pdf;
 using Tao.FreeGlut;
 using Tao.OpenGl;
-using iTextSharp;
 using iTextSharp.text;
-using iTextSharp.text.html;
-using Image = System.Drawing.Image;
+using Font = System.Drawing.Font;
 
 namespace ETopo
 {
@@ -26,10 +24,10 @@ namespace ETopo
         private double _moveX;
         private double _moveY;
         private bool _move;
-        private double _maxX = 0;
-        private double _maxY = 0;
-        private double _minX = 0;
-        private double _minY = 0;
+        private double _maxX;
+        private double _maxY;
+        private double _minX;
+        private double _minY;
         private double _dX;
         private double _dY;
         public double left;
@@ -75,6 +73,8 @@ namespace ETopo
             _editPoint = null;
 
             tVis.Enabled = true;
+
+            ReloadNames();
         }
 
         private static Point GetSplinePoint(SplinePoint spline0, SplinePoint spline1, double t)
@@ -114,14 +114,6 @@ namespace ETopo
             };
         }
 
-        private static System.Drawing.Point Rotate(float x, float y, double alpha)
-        {
-            return new System.Drawing.Point(
-                (int) (x*Math.Cos(alpha) - y*Math.Sin(alpha)),
-                (int) (x*Math.Sin(alpha) + y*Math.Cos(alpha))
-                );
-        }
-
         private void AddCgn(CgnType type, string prefix, float x, float y)
         {
             var numbs = new List<int>();
@@ -141,7 +133,6 @@ namespace ETopo
             };
             CgnList.Add(cgn);
             ReloadNames();
-            return;
         }
 
         private void DrowTrapez()
@@ -406,7 +397,7 @@ namespace ETopo
                             X = derPoint.X/(float) Math.Sqrt(derPoint.X*derPoint.X + derPoint.Y*derPoint.Y),
                             Y = derPoint.Y/(float) Math.Sqrt(derPoint.X*derPoint.X + derPoint.Y*derPoint.Y)
                         };
-                        p = Rotate((double) p.X, p.Y, 90*MathConst.Rad);
+                        p = Rotate(p.X, p.Y, 90*MathConst.Rad);
                         Gl.glBegin(Gl.GL_LINE_STRIP);
                         Gl.glVertex2d(point.X*_scale + _moveX, point.Y*_scale + _moveY);
                         Gl.glVertex2d((point.X + p.X/5)*_scale + _moveX, (point.Y + p.Y/5)*_scale + _moveY);
@@ -1216,15 +1207,96 @@ namespace ETopo
                 tan = 45*MathConst.Rad - Math.Atan((_maxY - _minY)/(_maxX - _minX));
             }
 
+            var mx = Math.Max(_maxX - _minX, _maxY - _minY);
+            var scl = 10;
+            while (mx/scl > 10)
+            {
+                scl *= 10;
+            }
+
             var bmpOut = new Bitmap(520, 520);
             var graph = Graphics.FromImage(bmpOut);
             graph.Clear(System.Drawing.Color.White);
             var pen = new Pen(System.Drawing.Color.Black);
+
+            // масштаб
+            var sclPoint1 = new Point
+            {
+                X = (float)(_maxX + _minX - scl) / 2,
+                Y = (float)(_minY - 0.5)
+            };
+            var sclPoint2 = new Point
+            {
+                X = (float)(_maxX + _minX + scl) / 2,
+                Y = (float)(_minY - 0.5)
+            };
+            var sclPointTxt = new Point
+            {
+                X = (float)(_maxX + _minX) / 2,
+                Y = (float)(_minY - 0.5)
+            };
+
+            elements.Add(new PdfElement
+            {
+                Pen = pen,
+                Points = new[] { sclPoint1, sclPoint2 },
+                Type = DrawType.Lines
+            });
+            elements.Add(new PdfElement
+            {
+                Pen = pen,
+                Points = new[] { sclPointTxt },
+                Type = DrawType.Text,
+                Text = scl+" м.",
+                Brush = new SolidBrush(System.Drawing.Color.Black)
+            });
+
+            // рисование севера
+            var offset = (_maxY - _minY) / 3;
+            var rose1 = Rotate(_minX, _maxY - offset, tan);
+            var rose2 = Rotate(_minX, _minY + offset, tan);
+            elements.Add(new PdfElement
+            {
+                Pen = pen,
+                Points = new [] {rose1, rose2},
+                Type = DrawType.Lines
+            });
+
+            var nPoint1 = Rotate(_minX, _maxY - offset, tan);
+            var nPoint2 = new Point {X = (float) (nPoint1.X + offset/24), Y = (float) (nPoint1.Y - offset/12)};
+            var nPoint3 = new Point {X = (float) (nPoint1.X - offset/24), Y = (float) (nPoint1.Y - offset/12)};
+            elements.Add(new PdfElement
+            {
+                Pen = pen,
+                Points = new[] { nPoint1, nPoint2, nPoint3 },
+                Type = DrawType.Polygon,
+                Brush = new SolidBrush(System.Drawing.Color.Black)
+            });
+
+            var nord = Rotate(_minX + offset / 24, _maxY - offset, tan);
+            var south = Rotate(_minX, _minY + offset, tan);
+            elements.Add(new PdfElement
+            {
+                Pen = pen,
+                Points = new [] { nord},
+                Type = DrawType.Text,
+                Text = "N",
+                Brush = new SolidBrush(System.Drawing.Color.Blue)
+            });
+            elements.Add(new PdfElement
+            {
+                Pen = pen,
+                Points = new[] { south },
+                Type = DrawType.Text,
+                Text = "S",
+                Brush = new SolidBrush(System.Drawing.Color.Red)
+            });
+
             // рисование сплайнов
             foreach (var spline in SplList)
             {
                 var pLst = new List<Point>();
-                pLst.Add(Rotate((double)spline.PointList[0].Point.X, spline.PointList[0].Point.Y, tan));
+                pLst.Add(Rotate(spline.PointList[0].Point.X, spline.PointList[0].Point.Y, tan));
             
                 for (var i = 0; i < spline.PointList.Count - 1; i++)
                 {
@@ -1232,7 +1304,7 @@ namespace ETopo
                     while (t < 1)
                     {
                         var point = GetSplinePoint(spline.PointList[i], spline.PointList[i + 1], t);
-                        pLst.Add(Rotate((double)point.X, point.Y, tan));
+                        pLst.Add(Rotate(point.X, point.Y, tan));
                         t += 0.1;
                     }
                 }
@@ -1258,13 +1330,183 @@ namespace ETopo
                             X = derPoint.X / (float)Math.Sqrt(derPoint.X * derPoint.X + derPoint.Y * derPoint.Y),
                             Y = derPoint.Y / (float)Math.Sqrt(derPoint.X * derPoint.X + derPoint.Y * derPoint.Y)
                         };
-                        p = Rotate((double)p.X, p.Y, 90 * MathConst.Rad);
-                        pLst.Add(Rotate((double)point.X, point.Y, tan));
+                        p = Rotate(p.X, p.Y, 90 * MathConst.Rad);
+                        pLst.Add(Rotate(point.X, point.Y, tan));
                         pLst.Add(Rotate((double)point.X + p.X / 5, point.Y + p.Y / 5, tan));
                         t += 1 / len;
                     }
                 }
                 elements.Add(new PdfElement { Pen = pen, Points = pLst.ToArray(), Type = DrawType.Lines });
+            }
+            // рисование луж
+            var brush = new SolidBrush(System.Drawing.Color.Aqua);
+            foreach (var cgn in CgnList.Where(r=>r.Type==CgnType.Water))
+            {
+                var pLst = new List<Point>();
+                var center = Rotate(cgn.Point.X, cgn.Point.Y, tan);
+
+                pLst.Add(new Point(center.X - 0.5f, center.Y - 0.3f));
+                pLst.Add(new Point(center.X + 0.5f, center.Y + 0.3f));
+
+                elements.Add(new PdfElement {Pen = pen, Brush = brush, Points = pLst.ToArray(), Type = DrawType.Elipse});
+            }
+
+            // рисование камней
+            brush = new SolidBrush(System.Drawing.Color.LightGray);
+            const float rad = 0.75f;
+            // длина стороны камня
+            const float length = 0.6f;
+            foreach (var stone in CgnList.Where(r => r.Type == CgnType.Stone))
+            {
+                var point1 = Rotate(stone.Point.X, stone.Point.Y + rad, tan);
+                var point2 = new Point
+                {
+                    X = (float) (point1.X + Math.Cos(-60*MathConst.Rad)*length),
+                    Y = (float) (point1.Y + Math.Sin(-60*MathConst.Rad)*length)
+                };
+                var point3 = new Point
+                {
+                    X = (float) (point1.X + Math.Cos(-120*MathConst.Rad)*length),
+                    Y = (float) (point1.Y + Math.Sin(-120*MathConst.Rad)*length)
+                };
+                var pLst = new List<Point> {point1, point2, point3};
+                elements.Add(new PdfElement { Pen = pen, Brush = brush, Points = pLst.ToArray(), Type = DrawType.Polygon });
+
+                point1 = Rotate(stone.Point.X + Math.Cos(-30*MathConst.Rad)*rad,
+                    stone.Point.Y + Math.Sin(-30*MathConst.Rad)*rad, tan);
+                point2 = new Point
+                {
+                    X = point1.X - length,
+                    Y = point1.Y
+                };
+                point3 = new Point
+                {
+                    X = (float) (point2.X + Math.Cos(60*MathConst.Rad)*length),
+                    Y = (float) (point2.Y + Math.Sin(60*MathConst.Rad)*length)
+                };
+                pLst = new List<Point> { point1, point2, point3 };
+                elements.Add(new PdfElement { Pen = pen, Brush = brush, Points = pLst.ToArray(), Type = DrawType.Polygon });
+
+                point1 = Rotate(stone.Point.X + Math.Cos(-150 * MathConst.Rad) * rad,
+                    stone.Point.Y + Math.Sin(-150 * MathConst.Rad) * rad, tan);
+                point2 = new Point
+                {
+                    X = point1.X + length,
+                    Y = point1.Y
+                };
+                point3 = new Point
+                {
+                    X = (float)(point1.X + Math.Cos(60 * MathConst.Rad) * length),
+                    Y = (float)(point1.Y + Math.Sin(60 * MathConst.Rad) * length)
+                };
+                pLst = new List<Point> { point1, point2, point3 };
+                elements.Add(new PdfElement { Pen = pen, Brush = brush, Points = pLst.ToArray(), Type = DrawType.Polygon });
+            }
+
+            // рисование сталактитов
+            brush = new SolidBrush(System.Drawing.Color.DimGray);
+            const float srad = 0.5f;
+            foreach (var stalactite in CgnList.Where(r => r.Type == CgnType.Stalactite))
+            {
+                var point1 = Rotate(stalactite.Point.X, stalactite.Point.Y - srad, tan);
+                var point2 = Rotate(stalactite.Point.X + Math.Cos(30*MathConst.Rad)*rad,
+                    stalactite.Point.Y + Math.Sin(30*MathConst.Rad)*srad, tan);
+                var point3 = Rotate(stalactite.Point.X + Math.Cos(150*MathConst.Rad)*rad,
+                    stalactite.Point.Y + Math.Sin(150*MathConst.Rad)*srad, tan);
+                var pLst = new List<Point> {point1, point2, point3};
+                elements.Add(new PdfElement {Pen = pen, Brush = brush, Points = pLst.ToArray(), Type = DrawType.Polygon});
+            }
+
+            // рисование сталагмитов
+            foreach (var stalagmite in CgnList.Where(r => r.Type == CgnType.Stalagmite))
+            {
+                var point1 = Rotate(stalagmite.Point.X, stalagmite.Point.Y + srad, tan);
+                var point2 = Rotate(stalagmite.Point.X + Math.Cos(-30*MathConst.Rad)*rad,
+                    stalagmite.Point.Y + Math.Sin(-30*MathConst.Rad)*srad, tan);
+                var point3 = Rotate(stalagmite.Point.X + Math.Cos(-150*MathConst.Rad)*rad,
+                    stalagmite.Point.Y + Math.Sin(-150*MathConst.Rad)*srad, tan);
+                var pLst = new List<Point> {point1, point2, point3};
+                elements.Add(new PdfElement {Pen = pen, Brush = brush, Points = pLst.ToArray(), Type = DrawType.Polygon});
+            }
+
+            // рисование сталагнатов
+            const double grad = 0.6;
+            foreach (var stalagnate in CgnList.Where(r => r.Type == CgnType.Stalagnate))
+            {
+                var point1 = Rotate(stalagnate.Point.X, stalagnate.Point.Y, tan);
+                var point2 = new Point
+                {
+                    X = (float) (point1.X + Math.Cos(60*MathConst.Rad)*grad),
+                    Y = (float) (point1.Y + Math.Sin(60*MathConst.Rad)*grad)
+                };
+                var point3 = new Point
+                {
+                    X = (float) (point1.X + Math.Cos(120*MathConst.Rad)*grad),
+                    Y = (float) (point1.Y + Math.Sin(120*MathConst.Rad)*grad)
+                };
+                var pLst = new List<Point> {point1, point2, point3};
+                elements.Add(new PdfElement {Pen = pen, Brush = brush, Points = pLst.ToArray(), Type = DrawType.Polygon});
+                
+                point1 = Rotate(stalagnate.Point.X, stalagnate.Point.Y, tan);
+                point2 = new Point
+                {
+                    X = (float) (point1.X + Math.Cos(-60*MathConst.Rad)*grad),
+                    Y = (float) (point1.Y + Math.Sin(-60*MathConst.Rad)*grad)
+                };
+                point3 = new Point
+                {
+                    X = (float) (point1.X + Math.Cos(-120*MathConst.Rad)*grad),
+                    Y = (float) (point1.Y + Math.Sin(-120*MathConst.Rad)*grad)
+                };
+                pLst = new List<Point> {point1, point2, point3};
+                elements.Add(new PdfElement {Pen = pen, Brush = brush, Points = pLst.ToArray(), Type = DrawType.Polygon});
+            }
+
+            // рисование входов
+            // длина стрелки
+            const double arrow = 0.7;
+            // длина указателя
+            const double pointer = 1.5;
+            brush = new SolidBrush(System.Drawing.Color.Black);
+            foreach (var enter in CgnList.Where(r => r.Type == CgnType.Enter))
+            {
+                var point1 = Rotate(enter.Point.X, enter.Point.Y, tan);
+                var point2 = new Point
+                {
+                    X = (float) (point1.X + Math.Cos((enter.Angle - 90 - 60)*MathConst.Rad)*arrow),
+                    Y = (float) (point1.Y + Math.Sin((enter.Angle - 90 - 60)*MathConst.Rad)*arrow)
+                };
+                var point3 = new Point
+                {
+                    X = (float) (point1.X + Math.Cos((enter.Angle - 90 - 120)*MathConst.Rad)*arrow),
+                    Y = (float) (point1.Y + Math.Sin((enter.Angle - 90 - 120)*MathConst.Rad)*arrow)
+                };
+                var pLst = new List<Point> { point1, point2, point3 };
+                elements.Add(new PdfElement { Pen = pen, Brush = brush, Points = pLst.ToArray(), Type = DrawType.Polygon });
+
+                point1 = Rotate(enter.Point.X, enter.Point.Y, tan);
+                var point4 = new Point
+                {
+                    X = (float) (point1.X - Math.Cos(enter.Angle*MathConst.Rad)*pointer),
+                    Y = (float) (point1.Y - Math.Sin(enter.Angle*MathConst.Rad)*pointer)
+                };
+                
+                pLst = new List<Point> { point1, point4 };
+                elements.Add(new PdfElement {Pen = pen, Points = pLst.ToArray(), Type = DrawType.Lines});
+            }
+
+            // рисование текста
+            foreach (var piquet in PqList.Where(r => !string.IsNullOrEmpty(r.Note)))
+            {
+                var point1 = Rotate(piquet.X, piquet.Y, tan);
+                var pLst = new List<Point> { point1 };
+                elements.Add(new PdfElement { Brush = brush, Points = pLst.ToArray(), Type = DrawType.Text, Text = piquet.Note});
+            }
+            foreach (var way in CgnList.Where(r => r.Type==CgnType.Way))
+            {
+                var point1 = Rotate(way.Point.X, way.Point.Y, tan);
+                var pLst = new List<Point> { point1 };
+                elements.Add(new PdfElement { Brush = brush, Points = pLst.ToArray(), Type = DrawType.Text, Text = "?" });
             }
 
             if (elements.Any())
@@ -1282,6 +1524,8 @@ namespace ETopo
                 }
                 var max = Math.Max(maxX - minX, maxY - minY);
                 if(max<MathConst.Accuracy ) return;
+                
+                
                 var scale = 500/max;
                 foreach (var point in elements.SelectMany(element => element.Points))
                 {
@@ -1289,33 +1533,65 @@ namespace ETopo
                     point.Y = (point.Y - minY)*scale;
                 }
 
-                foreach (var source in elements.Where(r=>r.Type==DrawType.Lines))
+                foreach (var source in elements.Where(r => r.Type == DrawType.Lines))
                 {
                     var points = source.Points.Select(
                         point => new System.Drawing.Point((int) point.X + 10, 500 - (int) point.Y)).ToArray();
                     graph.DrawLines(source.Pen, points);
                 }
+                foreach (var source in elements.Where(r => r.Type == DrawType.Polygon))
+                {
+                    var points = source.Points.Select(
+                        point => new System.Drawing.Point((int)point.X + 10, 500 - (int)point.Y)).ToArray();
+                    graph.DrawPolygon(source.Pen, points);
+                    graph.FillPolygon(source.Brush, points);
+                }
+                foreach (var source in elements.Where(r => r.Type == DrawType.Elipse))
+                {
+                    var points = source.Points.Select(
+                        point => new System.Drawing.Point((int)point.X + 10, 500 - (int)point.Y)).ToArray();
+                    var rect = new System.Drawing.Rectangle(points[0].X, points[0].Y, points[1].X - points[0].X,
+                        points[1].Y - points[0].Y);
+                    graph.DrawEllipse(source.Pen, rect);
+                    graph.FillEllipse(source.Brush, rect);
+                }
+                var font = new Font("Times New Roman", 8);
+                foreach (var source in elements.Where(r => r.Type == DrawType.Text))
+                {
+                    var points = source.Points.Select(
+                        point => new System.Drawing.Point((int)point.X + 10, 500 - (int)point.Y)).ToArray();
+
+                    graph.DrawString(source.Text,font,source.Brush, points[0]);
+                }
             }
-            var imgStream = new MemoryStream();
-            bmpOut.Save(imgStream, ImageFormat.Jpeg);
-            imgStream.Position = 0;
-            var pdf = new MemoryStream();
-            var document = new Document(PageSize.A4);
-            document.SetMargins(40f, 20f, 5f, 5f);
-            
-            var wrPdf = PdfWriter.GetInstance(document, pdf);
-            wrPdf.CloseStream = false;
-            document.Open();
-            var img = iTextSharp.text.Image.GetInstance(imgStream);
-            document.Add(img);
-            document.Close();
-            pdf.Position = 0;
-            var fileStream = File.Create(fileName);
-            pdf.CopyTo(fileStream);
-            fileStream.Close();
-            pdf.Close();
-            imgStream.Close();
-            graph.Dispose();
+            try
+            {
+                var imgStream = new MemoryStream();
+                bmpOut.Save(imgStream, ImageFormat.Jpeg);
+                imgStream.Position = 0;
+                var pdf = new MemoryStream();
+                var document = new Document(PageSize.A4);
+                document.SetMargins(40f, 20f, 5f, 5f);
+
+                var wrPdf = PdfWriter.GetInstance(document, pdf);
+                wrPdf.CloseStream = false;
+                document.Open();
+                var img = iTextSharp.text.Image.GetInstance(imgStream);
+                document.Add(img);
+                document.Close();
+                pdf.Position = 0;
+                var fileStream = File.Create(fileName);
+                pdf.CopyTo(fileStream);
+                fileStream.Close();
+                pdf.Close();
+                imgStream.Close();
+                graph.Dispose();
+                MessageBox.Show(Resources.Saved);
+            }
+            catch
+            {
+                MessageBox.Show("Нет доступа к файлу", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void mSave_Click(object sender, EventArgs e)
