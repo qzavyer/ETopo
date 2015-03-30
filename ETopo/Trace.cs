@@ -1,5 +1,8 @@
 ﻿namespace ETopo
 {
+    /// <summary>
+    /// класс трассы
+    /// </summary>
     public class Trace
     {
         public string From { get; set; }

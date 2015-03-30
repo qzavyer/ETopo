@@ -2,6 +2,9 @@
 
 namespace ETopo
 {
+    /// <summary>
+    /// типы PDF-элементов
+    /// </summary>
     public enum DrawType
     {
         Lines = 0,
@@ -11,6 +14,9 @@ namespace ETopo
         Arrow = 4
     }
 
+    /// <summary>
+    /// элемент экспорта в PDF
+    /// </summary>
     public class PdfElement
     {
         public Pen Pen { get; set; }

@@ -2,20 +2,13 @@
 
 namespace ETopo
 {
+    /// <summary>
+    /// класс вектора смещения
+    /// </summary>
     public class Vector
     {
-        
-        /// <summary>
-        /// Длина вектрора
-        /// </summary>
         public double Length { get; set; }
-        /// <summary>
-        /// Азимут
-        /// </summary>
         public double Fi { get; set; }
-        /// <summary>
-        /// Клин
-        /// </summary>
         public double Teta { get; set; }
 
         public Vector()
@@ -42,6 +35,7 @@ namespace ETopo
             Teta = vector.Teta;
         }
 
+        // переопределение функции сложения
         public static Vector operator +(Vector v1, Vector v2)
         {
             var x1 = Math.Sin(v1.Fi*MathConst.Rad)*v1.Length;
@@ -56,6 +50,7 @@ namespace ETopo
             return new Vector(x, y, z);
         }
 
+        // переопределение функции вычитания
         public static Vector operator -(Vector v1, Vector v2)
         {
             var x1 = Math.Cos(v1.Fi) * v1.Length;

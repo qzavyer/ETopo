@@ -2,6 +2,9 @@
 
 namespace ETopo
 {
+    /// <summary>
+    /// класс кольцовки
+    /// </summary>
     public class Ring
     {
         public List<Piquet> Points { get; private set; }

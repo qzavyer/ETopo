@@ -80,11 +80,29 @@ namespace ETopo.Properties {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Нет доступа к файлу.
+        /// </summary>
+        internal static string FileAccessError {
+            get {
+                return ResourceManager.GetString("FileAccessError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Ошибка чтения файла.
         /// </summary>
         internal static string FileReadError {
             get {
                 return ResourceManager.GetString("FileReadError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Нет данных для отображения.
+        /// </summary>
+        internal static string NoDataError {
+            get {
+                return ResourceManager.GetString("NoDataError", resourceCulture);
             }
         }
         

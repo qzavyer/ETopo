@@ -2,6 +2,9 @@
 
 namespace ETopo
 {
+    /// <summary>
+    /// класс пикета
+    /// </summary>
     public class Piquet
     {
         public string Name { get; set; }
@@ -37,6 +40,7 @@ namespace ETopo
             Offset = new Vector(piquet.Offset);
         }
 
+        // смещение пикета на вектор offset
         public void Correct(Vector offset)
         {
             var x = Math.Sin(offset.Fi*MathConst.Rad)*offset.Length;

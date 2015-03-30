@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace ETopo
 {
+    /// <summary>
+    /// класс данных о топосъёмке
+    /// </summary>
     public class SurveyData
     {
         private DateTime _date { get; set; }
@@ -20,5 +23,10 @@ namespace ETopo
         }
 
         public List<string> Team { get; set; }
+
+        public SurveyData()
+        {
+            Team = new List<string>();
+        }
     }
 }

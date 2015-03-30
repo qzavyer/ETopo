@@ -2,17 +2,27 @@
 
 namespace ETopo
 {
+    /// <summary>
+    /// типы сплайнов
+    /// </summary>
     public enum SplineType
     {
         Wall = 1,
         Precipice = 2
     }
+
+    /// <summary>
+    /// направления сплайнов
+    /// </summary>
     public enum SplineDirrection
     {
         Left = 0,
         Right = 1
     }
 
+    /// <summary>
+    /// класс сплайна
+    /// </summary>
     public class Spline
     {
         public string Name { get; set; }
@@ -55,6 +65,9 @@ namespace ETopo
         }
     }
 
+    /// <summary>
+    /// класс точки сплайна
+    /// </summary>
     public class SplinePoint
     {
         public Point Point { get; set; }

@@ -4,8 +4,12 @@ using System.Linq;
 
 namespace ETopo
 {
+    /// <summary>
+    /// класс методов математического преобразования
+    /// </summary>
     public static class TopoLib
     {
+        // получение координат пикета из данных о трассе
         private static Piquet GetPiquet(Trace trace, Piquet start, bool back)
         {
             var piquet = new Piquet
@@ -25,6 +29,7 @@ namespace ETopo
             return piquet;
         }
 
+        // ввод новой трассы
         public static void GetTrace(List<Trace> trcList, List<Piquet> pqList, Piquet start)
         {
             foreach (var trace in trcList.Where(t => t.From == start.Name))
@@ -79,6 +84,7 @@ namespace ETopo
             }
         }
 
+        // получение цепочки трасс до начального пикета
         public static List<Trace> GetString(List<Piquet> stringPqList, List<Trace> traceList, Piquet prevous, List<Piquet> piquetList)
         {
             var result = new List<Trace>();
@@ -106,6 +112,7 @@ namespace ETopo
             return result;
         }
 
+        // получение всех кольцовок
         public static List<Ring> GetAllRing(List<Trace> trcLst, List<Piquet> piquets, Piquet start)
         {
             var result = new List<Ring>();
@@ -197,6 +204,7 @@ namespace ETopo
             return result;
         }
 
+        // получение длинны кольцовки
         public static double GetRingLength(Ring ring, List<Trace> trcLst)
         {
             var piqets = ring.Points;
@@ -213,6 +221,7 @@ namespace ETopo
             return length;
         }
 
+        // получение вектора смещения
         public static Vector GetRingOffset(Ring ring, List<Trace> trcLst, List<Piquet> piquets)
         {
             if (trcLst == null || piquets == null || ring == null || ring.Points.Count == 0) return null;
@@ -241,6 +250,7 @@ namespace ETopo
             return null;
         }
 
+        // корректировка координат пикетов
         public static void PiquetsCorrection(Ring ring, List<Trace> trcList, List<Piquet> pqList, Piquet start,Vector offset)
         {
             foreach (var trace in trcList.Where(t=>t.From==start.Name))

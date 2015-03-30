@@ -1,4 +1,8 @@
-﻿using System;
+﻿using iTextSharp.text;
+using iTextSharp.text.html;
+using iTextSharp.text.html.simpleparser;
+using iTextSharp.text.pdf;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -9,17 +13,17 @@ using System.Windows.Forms;
 using System.Xml;
 using ETopo.Properties;
 using Ionic.Zip;
-using iTextSharp.text.pdf;
 using Tao.FreeGlut;
 using Tao.OpenGl;
-using iTextSharp.text;
 using Font = System.Drawing.Font;
 
 namespace ETopo
 {
+    /// <summary>
+    /// Форма графичесого редактора
+    /// </summary>
     public partial class Graph : Form
     {
-        public SurveyData SurData;
         private double _scale = 1;
         private double _moveX;
         private double _moveY;
@@ -31,27 +35,29 @@ namespace ETopo
         private double _dX;
         private double _dY;
         public double left;
-        public double right;
-        public double bottom;
-        public double top;
         private double _devX;
         private double _devY;
         private EditPoint _editPoint;
         private EditCgnPoint _editCgnPoint;
+        private List<SplinePoint> _curSpline;
+        private List<Piquet> _currPqList;
 
+        public double right;
+        public double bottom;
+        public double top;
         public List<Spline> SplList;
         public List<Piquet> PqList;
         public List<Trace> TrcList;
         public List<Cgn> CgnList;
-        private List<SplinePoint> _curSpline;
-        private List<Piquet> _currPqList;
-
+        public SurveyData SurData; 
+        
         public Graph()
         {
             InitializeComponent();
             anT.InitializeContexts();
         }
 
+        // загрузка формы
         private void Graph_Load(object sender, EventArgs e)
         {
             Gl.glClearColor(255, 255, 255, 1);
@@ -77,6 +83,7 @@ namespace ETopo
             ReloadNames();
         }
 
+        // получение очередной точки для рисования сплайна
         private static Point GetSplinePoint(SplinePoint spline0, SplinePoint spline1, double t)
         {
             return new Point
@@ -91,6 +98,7 @@ namespace ETopo
             };
         }
 
+        // получение касательной к точке сплайна
         private static Point GetDerSplinePoint(SplinePoint spline0, SplinePoint spline1, double t)
         {
             return new Point
@@ -105,6 +113,7 @@ namespace ETopo
             };
         }
 
+        // поворот точки относительно начала координат
         private static Point Rotate(double x, double y, double alpha)
         {
             return new Point
@@ -114,6 +123,7 @@ namespace ETopo
             };
         }
 
+        // добавление УГО
         private void AddCgn(CgnType type, string prefix, float x, float y)
         {
             var numbs = new List<int>();
@@ -135,6 +145,7 @@ namespace ETopo
             ReloadNames();
         }
 
+        // отображение трепеций
         private void DrowTrapez()
         {
             foreach (
@@ -217,6 +228,7 @@ namespace ETopo
             }
         }
 
+        // отображение трасс
         private void DrowTraces()
         {
             foreach (var trace in TrcList)
@@ -254,6 +266,7 @@ namespace ETopo
             }
         }
 
+        // отображение пикетов
         private void DrowPiquets()
         {
             foreach (var piquet in PqList)
@@ -273,6 +286,7 @@ namespace ETopo
             }
         }
 
+        // отображение стен
         private void DrowWalls()
         {
             foreach (var spline in SplList.Where(s => s.Type == SplineType.Wall))
@@ -353,6 +367,7 @@ namespace ETopo
             Gl.glEnd();
         }
 
+        // отображение обрывов
         private void DrowPrecipice()
         {
             // рисование сплайна
@@ -461,6 +476,7 @@ namespace ETopo
             Gl.glEnd();
         }
 
+        // отображение камней
         private void DrowStones()
         {
             // радиус описаной вокруг камней окружности
@@ -513,6 +529,7 @@ namespace ETopo
             }
         }
 
+        // отображение луж
         private void DrowWaters()
         {
             // малый радиус элипса
@@ -541,6 +558,7 @@ namespace ETopo
             }
         }
 
+        // отображение сталагмитов
         private void DrowStalagmites()
         {
             // радиус описаной вокруг символа окружности
@@ -569,6 +587,7 @@ namespace ETopo
             }
         }
 
+        // отображение сталактитов
         private void DrowStalactites()
         {
             // радиус описаной вокруг символа окружности
@@ -597,6 +616,7 @@ namespace ETopo
             }
         }
 
+        // отображение сталагратов
         private void DrowStalagnates()
         {
             // радиус описаной вокруг символа окружности
@@ -635,6 +655,7 @@ namespace ETopo
             }
         }
 
+        // отображение ходов
         private void DrowWays()
         {
             foreach (var way in CgnList.Where(c => c.Type == CgnType.Way))
@@ -651,6 +672,7 @@ namespace ETopo
             }
         }
 
+        // отображение входов
         private void DrowEnters()
         {
             // длина стрелки
@@ -698,6 +720,7 @@ namespace ETopo
             }
         }
 
+        // отображение карты
         private void DrawMap()
         {
             Gl.glClear(Gl.GL_COLOR_BUFFER_BIT | Gl.GL_DEPTH_BUFFER_BIT);
@@ -731,6 +754,7 @@ namespace ETopo
             anT.Invalidate();
         }
 
+        // отображение текста
         private static void PrintText2D(float x, float y, string text, int fontSize = 9)
         {
 
@@ -773,11 +797,13 @@ namespace ETopo
             }
         }
 
+        // событие таймера
         private void tVis_Tick(object sender, EventArgs e)
         {
             DrawMap();
         }
 
+        // клик на графическом поле ввода
         private void anT_MouseClick(object sender, MouseEventArgs e)
         {
             // приводим к нужному нам формату, в соотвествии с настройками проекции 
@@ -851,6 +877,7 @@ namespace ETopo
             listBox1.SelectedItem = null;
         }
 
+        // нажантие кнопки мыши на графическом поле ввода
         private void anT_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Left) return;
@@ -925,6 +952,7 @@ namespace ETopo
             _dY = e.Y;
         }
 
+        // перемещение мыши на графическом поле ввода
         private void anT_MouseMove(object sender, MouseEventArgs e)
         {
             if (_move)
@@ -999,6 +1027,7 @@ namespace ETopo
             }
         }
 
+        // отпускание кнопки мыши на графическом поле ввода
         private void anT_MouseUp(object sender, MouseEventArgs e)
         {
             _move = false;
@@ -1006,6 +1035,7 @@ namespace ETopo
             _editCgnPoint = null;
         }
 
+        // вращение колёсика мыши на графическом поле ввода
         private void anT_MouseWheel(object sender, MouseEventArgs e)
         {
             // изменение координаты Z в зависимости от направления вращения
@@ -1019,6 +1049,57 @@ namespace ETopo
             if (_scale < 0) _scale = 0;
         }
 
+        // нажатие клавиши на графическом поле ввода
+        private void anT_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.KeyData)
+            {
+                case Keys.Delete:
+                    var name = listBox1.SelectedItem;
+                    SplList.RemoveAll(s => ReferenceEquals(s.Name, name));
+                    CgnList.RemoveAll(c => ReferenceEquals(c.Name, name));
+                    ReloadNames();
+                    break;
+                case Keys.Enter:
+                    if (rbAddWall.Checked)
+                    {
+                        var numbs = new List<int>();
+                        foreach (var item in listBox1.Items)
+                        {
+                            if (item.ToString().Contains("Стена"))
+                            {
+                                numbs.Add(Convert.ToInt32(item.ToString().Replace("Стена", "")));
+                            }
+                        }
+                        var numb = numbs.Any() ? (numbs.Max() + 1) : 1;
+                        var spline = new Spline(SplineType.Wall, _curSpline) { Name = "Стена" + numb };
+                        SplList.Add(spline);
+                    }
+                    if (rbAddPrecipice.Checked)
+                    {
+                        var numbs = new List<int>();
+                        foreach (var item in listBox1.Items)
+                        {
+                            if (item.ToString().Contains("Обрыв"))
+                            {
+                                numbs.Add(Convert.ToInt32(item.ToString().Replace("Обрыв", "")));
+                            }
+                        }
+                        var numb = numbs.Any() ? (numbs.Max() + 1) : 1;
+                        var spline = new Spline(SplineType.Precipice, _curSpline) { Name = "Обрыв" + numb };
+                        SplList.Add(spline);
+                    }
+
+                    ReloadNames();
+                    _curSpline = new List<SplinePoint>();
+                    break;
+                case Keys.Escape:
+                    _curSpline = new List<SplinePoint>();
+                    break;
+            }
+        }
+
+        // изменение размеров формы
         private void Graph_Resize(object sender, EventArgs e)
         {
             Gl.glClearColor(255, 255, 255, 1);
@@ -1040,6 +1121,7 @@ namespace ETopo
             //Gl.glEnable(Gl.GL_DEPTH_TEST);
         }
 
+        // изменение флажка элементов карты
         private void cbSpline_CheckedChanged(object sender, EventArgs e)
         {
             if (cbSpline.Checked)
@@ -1067,6 +1149,34 @@ namespace ETopo
             rbAddStalagnate.Checked = false;
         }
 
+        // изменение флажка УГО
+        private void cbCGN_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cbCGN.Checked)
+            {
+                cbSpline.Checked = false;
+            }
+            rbAddPrecipice.Enabled = cbCGN.Checked;
+            rbAddStone.Enabled = cbCGN.Checked;
+            rbAddWater.Enabled = cbCGN.Checked;
+            rbAddStalactite.Enabled = cbCGN.Checked;
+            rbAddStalagmite.Enabled = cbCGN.Checked;
+            rbAddStalagnate.Enabled = cbCGN.Checked;
+            rbAddWall.Enabled = cbSpline.Checked;
+            rbAddWay.Enabled = cbSpline.Checked;
+            rbAddEnter.Checked = cbSpline.Checked;
+            rbAddWall.Checked = false;
+            rbAddWay.Checked = false;
+            rbAddEnter.Checked = false;
+            rbAddPrecipice.Checked = false;
+            rbAddStone.Checked = false;
+            rbAddWater.Checked = false;
+            rbAddStalactite.Checked = false;
+            rbAddStalagmite.Checked = false;
+            rbAddStalagnate.Checked = false;
+        }
+
+        // нажатие клавиши в списке элементов
         private void listBox1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyData == Keys.Delete)
@@ -1078,6 +1188,7 @@ namespace ETopo
             }
         }
 
+        // обновление списка элементов
         private void ReloadNames()
         {
             listBox1.Items.Clear();
@@ -1119,82 +1230,8 @@ namespace ETopo
             }
         }
 
-        private void cbCGN_CheckedChanged(object sender, EventArgs e)
-        {
-            if (cbCGN.Checked)
-            {
-                cbSpline.Checked = false;
-            }
-            rbAddPrecipice.Enabled = cbCGN.Checked;
-            rbAddStone.Enabled = cbCGN.Checked;
-            rbAddWater.Enabled = cbCGN.Checked;
-            rbAddStalactite.Enabled = cbCGN.Checked;
-            rbAddStalagmite.Enabled = cbCGN.Checked;
-            rbAddStalagnate.Enabled = cbCGN.Checked;
-            rbAddWall.Enabled = cbSpline.Checked;
-            rbAddWay.Enabled = cbSpline.Checked;
-            rbAddEnter.Checked = cbSpline.Checked;
-            rbAddWall.Checked = false;
-            rbAddWay.Checked = false;
-            rbAddEnter.Checked = false;
-            rbAddPrecipice.Checked = false;
-            rbAddStone.Checked = false;
-            rbAddWater.Checked = false;
-            rbAddStalactite.Checked = false;
-            rbAddStalagmite.Checked = false;
-            rbAddStalagnate.Checked = false;
-        }
-
-        private void anT_KeyDown(object sender, KeyEventArgs e)
-        {
-            switch (e.KeyData)
-            {
-                case Keys.Delete:
-                    var name = listBox1.SelectedItem;
-                    SplList.RemoveAll(s => ReferenceEquals(s.Name, name));
-                    CgnList.RemoveAll(c => ReferenceEquals(c.Name, name));
-                    ReloadNames();
-                    break;
-                case Keys.Enter:
-                    if (rbAddWall.Checked)
-                    {
-                        var numbs = new List<int>();
-                        foreach (var item in listBox1.Items)
-                        {
-                            if (item.ToString().Contains("Стена"))
-                            {
-                                numbs.Add(Convert.ToInt32(item.ToString().Replace("Стена", "")));
-                            }
-                        }
-                        var numb = numbs.Any() ? (numbs.Max() + 1) : 1;
-                        var spline = new Spline(SplineType.Wall, _curSpline) {Name = "Стена" + numb};
-                        SplList.Add(spline);
-                    }
-                    if (rbAddPrecipice.Checked)
-                    {
-                        var numbs = new List<int>();
-                        foreach (var item in listBox1.Items)
-                        {
-                            if (item.ToString().Contains("Обрыв"))
-                            {
-                                numbs.Add(Convert.ToInt32(item.ToString().Replace("Обрыв", "")));
-                            }
-                        }
-                        var numb = numbs.Any() ? (numbs.Max() + 1) : 1;
-                        var spline = new Spline(SplineType.Precipice, _curSpline) {Name = "Обрыв" + numb};
-                        SplList.Add(spline);
-                    }
-
-                    ReloadNames();
-                    _curSpline = new List<SplinePoint>();
-                    break;
-                case Keys.Escape:
-                    _curSpline = new List<SplinePoint>();
-                    break;
-            }
-        }
-
-        private void ConvertToBitmap(string fileName)
+        // экспорт в PDF
+        private void ExportToPdf(string fileName)
         {
             var elements = new List<PdfElement>();
             double tan;
@@ -1577,7 +1614,30 @@ namespace ETopo
                 wrPdf.CloseStream = false;
                 document.Open();
                 var img = iTextSharp.text.Image.GetInstance(imgStream);
-                document.Add(img);
+                var baseFont = BaseFont.CreateFont(@"c:\Windows\Fonts\times.ttf", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+                var bodyFont = new iTextSharp.text.Font(baseFont, 12, iTextSharp.text.Font.NORMAL);
+                var boldFont = new iTextSharp.text.Font(baseFont, 18, iTextSharp.text.Font.BOLD);
+
+                var paragraph = new Paragraph("Пещера "+SurData.Name, boldFont)
+                {
+                    Alignment = Element.ALIGN_CENTER,
+                    SpacingAfter = 10f
+                };
+                document.Add(paragraph);
+
+                if (SurData.Date != null)
+                {
+                    paragraph = new Paragraph(SurData.Date.Value.ToString("dd.MM.yyyy"), bodyFont) { Alignment = Element.ALIGN_RIGHT, SpacingAfter = 5f };
+                    document.Add(paragraph);
+                }
+
+                foreach (var item in SurData.Team)
+                {
+                    paragraph = new Paragraph(item, bodyFont) { Alignment = Element.ALIGN_RIGHT };
+                    document.Add(paragraph);
+                }
+                paragraph = new Paragraph {img};
+                document.Add(paragraph);
                 document.Close();
                 pdf.Position = 0;
                 var fileStream = File.Create(fileName);
@@ -1588,12 +1648,13 @@ namespace ETopo
                 graph.Dispose();
                 MessageBox.Show(Resources.Saved);
             }
-            catch
+            catch(Exception ex)
             {
-                MessageBox.Show("Нет доступа к файлу", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(Resources.FileAccessError, Resources.ETopo, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
+        // пункт меню Сохранить
         private void mSave_Click(object sender, EventArgs e)
         {
             if (sdSave.ShowDialog() != DialogResult.OK) return;
@@ -1731,10 +1792,11 @@ namespace ETopo
             MessageBox.Show(Resources.Saved);
         }
 
+        // пункт меню Экспорт в PDF
         private void mExport_Click(object sender, EventArgs e)
         {
             if (sdPdf.ShowDialog() != DialogResult.OK) return;
-            ConvertToBitmap(sdPdf.FileName);
+            ExportToPdf(sdPdf.FileName);
         }
     }
 }

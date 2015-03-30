@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace ETopo
+﻿namespace ETopo
 {
+    /// <summary>
+    /// типы УГО
+    /// </summary>
     public enum CgnType
     {
         Stone = 1,
@@ -16,6 +14,9 @@ namespace ETopo
         Enter = 7
     }
 
+    /// <summary>
+    /// класс УГО
+    /// </summary>
     public class Cgn
     {
         public string Name { get; set; }

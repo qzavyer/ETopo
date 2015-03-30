@@ -1,5 +1,8 @@
 ﻿namespace ETopo
 {
+    /// <summary>
+    /// класс точки в графическом редакторе
+    /// </summary>
     public class Point
     {
         public float X { get; set; }

@@ -11,6 +11,9 @@ using Tao.FreeGlut;
 
 namespace ETopo
 {
+    /// <summary>
+    /// главная форма
+    /// </summary>
     public partial class FrMain : Form
     {
         public SurveyData _surData = new SurveyData();
@@ -27,6 +30,7 @@ namespace ETopo
             InitializeComponent();
         }
 
+        // загрузка формы
         private void Form1_Load(object sender, EventArgs e)
         {
             Glut.glutInit();
@@ -34,6 +38,7 @@ namespace ETopo
             dgTopo.BackgroundImage = Resources.cell;
         }
 
+        // пункт меню Загрузить
         private void LoadMenu_Click(object sender, EventArgs e)
         {
             if (odLoad.ShowDialog() != DialogResult.OK) return;
@@ -448,6 +453,7 @@ namespace ETopo
             }
         }
 
+        // пункт меню Сохранить
         private void SaveMenu_Click(object sender, EventArgs e)
         {
             if (sdSave.ShowDialog() != DialogResult.OK) return;
@@ -680,15 +686,21 @@ namespace ETopo
             MessageBox.Show(Resources.Saved);
         }
         
+        // пункт меню Карта 2D
         private void dToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(_piquetLst==null||_piquetLst.Count==0||_traceList==null||_traceList.Count==0) return;
+            if (_piquetLst == null || _piquetLst.Count == 0 || _traceList == null || _traceList.Count == 0)
+            {
+                MessageBox.Show(Resources.NoDataError);
+                return;
+            }
             var fr = new Graph
             {
                 PqList = _piquetLst,
                 TrcList = _traceList,
                 SplList = _splineList,
-                CgnList = _cgnList
+                CgnList = _cgnList,
+                SurData = _surData
             };
             var d = Math.Max(_traceList.Max(t => t.Left), _traceList.Max(t => t.Right));
             fr.top = _piquetLst.Max(p => p.Y)+d;
@@ -698,6 +710,7 @@ namespace ETopo
             fr.ShowDialog();
         }
 
+        // пункт меню Данные Съёмки
         private void mData_Click(object sender, EventArgs e)
         {
             var fr = new FrTopoData
@@ -712,6 +725,7 @@ namespace ETopo
             _surData.Team = fr.autor;
         }
 
+        // пункт меню Выход
         private void ExitMenu_Click(object sender, EventArgs e)
         {
             Close();

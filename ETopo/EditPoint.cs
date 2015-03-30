@@ -1,5 +1,8 @@
 ﻿namespace ETopo
 {
+    /// <summary>
+    /// класс редактируемой опорной точки сплайна
+    /// </summary>
     public class EditPoint
     {
         public SplinePoint Point { get; set; }
@@ -12,6 +15,9 @@
         }
     }
 
+    /// <summary>
+    /// класс редактируемой точки УГО
+    /// </summary>
     public class EditCgnPoint
     {
         public Cgn Cgn { get; set; }

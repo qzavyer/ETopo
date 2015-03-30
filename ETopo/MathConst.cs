@@ -2,6 +2,9 @@
 
 namespace ETopo
 {
+    /// <summary>
+    /// математические константы
+    /// </summary>
     public static class MathConst
     {
         public const double Rad = Math.PI/180;

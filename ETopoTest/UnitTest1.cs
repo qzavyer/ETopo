@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace ETopoTest
 {
     /// <summary>
-    /// Сводное описание для UnitTest1
+    /// тестирование функций математической обработки
     /// </summary>
     [TestClass]
     public class TopoListTest

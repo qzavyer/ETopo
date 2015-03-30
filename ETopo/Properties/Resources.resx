@@ -130,4 +130,10 @@
   <data name="Saved" xml:space="preserve">
     <value>Сохранено</value>
   </data>
+  <data name="FileAccessError" xml:space="preserve">
+    <value>Нет доступа к файлу</value>
+  </data>
+  <data name="NoDataError" xml:space="preserve">
+    <value>Нет данных для отображения</value>
+  </data>
 </root>
